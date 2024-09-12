@@ -14,14 +14,22 @@
       }
     ]
   },
+  "scripts-info": {
+    "compile": "Build bundles",
+    "format": "Format source code",
+    "watch": "Recompile source code on change"
+  },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
+    "format": "yarn prettier . --write",
+    "vscode:prepublish": "yarn run compile",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
     "@types/vscode": "^1.93.0",
+    "husky": "^8.0.0",
+    "prettier": "^3.3.3",
     "typescript": "^5.6.2"
   }
 }
