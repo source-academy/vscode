@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "module": "Node16",
     "target": "ES2022",
     "outDir": "out",
-    "lib": ["ES2022"],
+    "lib": ["dom", "ES2022"],
     "sourceMap": true,
     "rootDir": "src",
     "strict": true /* enable all strict type-checking options */
