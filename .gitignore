@@ -1,0 +1,15 @@
+# Flakes
+.direnv/
+
+# Node dependencies
+node_modules/
+
+
+# Build artifacts
+out/
+
+# Logs
+yarn-error.log
+
+# Misc
+.DS_Store
