@@ -2,20 +2,54 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
+import { Variant, Chapter } from "js-slang/dist/types";
+import { createContext, runInContext, type IOptions } from "js-slang";
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand("sa-vscode.react", () => {
-    const panel = vscode.window.createWebviewPanel(
-      "react",
-      "My Title Here",
-      vscode.ViewColumn.One,
-      { enableScripts: true },
-    );
-    panel.webview.html = getWebviewContent(context, panel);
-  });
+  context.subscriptions.push(
+    vscode.commands.registerCommand("sa-vscode.stepper", async () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showErrorMessage("Please open an active editor!");
+        return;
+      }
 
-  context.subscriptions.push(disposable);
+      // Get text from active document and run it through the stepper
+      const text = editor.document.getText();
+      const chapter = Chapter.SOURCE_1;
+      const runnercontext = createContext(chapter, Variant.NON_DET);
+      const options: Partial<IOptions> = {
+        executionMethod: "interpreter",
+        useSubst: true,
+      };
+      const output = await runInContext(text, runnercontext, options);
+
+      if (output.status !== "finished") {
+        vscode.window.showErrorMessage(
+          "The stepper did not complete successfully, please check your code.",
+        );
+        return;
+      }
+      const stepperResult = output.value;
+
+      const panel = vscode.window.createWebviewPanel(
+        "stepper",
+        "Stepper",
+        vscode.ViewColumn.Beside,
+        {
+          enableScripts: true, // Enable scripts in the webview
+        },
+      );
+      panel.webview.html = getWebviewContent(context, panel);
+
+      // Send the stepper result to the webview (but sleep 1s to wait for script to load)
+      setTimeout(() => {
+        panel.webview.postMessage(stepperResult);
+      }, 1000);
+    }),
+  );
 }
 
 function getNonce(): string {
