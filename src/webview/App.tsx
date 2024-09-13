@@ -1,7 +1,7 @@
 import React from "react";
-import Foo from "./components/Foo";
+import Stepper from "./components/Stepper";
 
 function App() {
-  return <Foo />;
+  return <Stepper />;
 }
 export default App;
