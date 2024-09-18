@@ -24,11 +24,16 @@ export function activate(context: vscode.ExtensionContext) {
         executionMethod: "interpreter",
         useSubst: true,
       };
+      // @ts-ignore
+      global.window = 1;
       const output = await runInContext(text, runnercontext, options);
+
+      await fetch("https://source-academy.github.io/modules/bundles/rune.js");
 
       if (output.status !== "finished") {
         vscode.window.showErrorMessage(
-          "The stepper did not complete successfully, please check your code.",
+          runnercontext.errors[0].toString(),
+          // "The stepper did not complete successfully, please check your code.",
         );
         return;
       }
@@ -80,7 +85,7 @@ function getWebviewContent(
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src *; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
       <title>Cat Coding</title>
     </head>
     <body>
