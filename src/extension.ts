@@ -27,8 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
       // @ts-ignore
       global.window = 1;
       const output = await runInContext(text, runnercontext, options);
+      console.log(process.versions);
 
-      await fetch("https://source-academy.github.io/modules/bundles/rune.js");
+      // await fetch("https://source-academy.github.io/modules/bundles/rune.js");
 
       if (output.status !== "finished") {
         vscode.window.showErrorMessage(
