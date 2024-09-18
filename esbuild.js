@@ -7,6 +7,7 @@ async function main() {
     format: "cjs",
     platform: "node",
     outfile: "./out/extension.js",
+    sourcemap: true,
     external: ["vscode"],
   });
 
@@ -14,6 +15,7 @@ async function main() {
     entryPoints: ["./src/webview/index.tsx"],
     bundle: true,
     format: "cjs",
+    sourcemap: true,
     outfile: "./out/webview.js",
   });
 
@@ -24,7 +26,7 @@ async function main() {
     await webviewCtx.watch();
     console.log("Watching files...");
   } else {
-    Promise.all([extensionCtx.watch(), webviewCtx.watch()]).then(() => {
+    Promise.all([extensionCtx.rebuild(), webviewCtx.rebuild()]).then(() => {
       console.log("Builds completed successfully.");
       process.exit(0);
     });
