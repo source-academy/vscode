@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import Stepper from "./components/Stepper";
 
 function App() {
-  const [state, setState] = useState("");
-  fetch("https://sa-modules.heyzec.dedyn.io/tabs/Repeat.js").then(() => {
-    setState("100");
-  });
+  const [state, setState] = useState(0);
+
   return (
     <>
       {"HEEEEEEEEEEEEEEEE"}
       {state}
-      <Stepper />;
+      <button onClick={() => {
+        setState(state => state + 1);
+      }}></button>
+      {/* <Stepper />; */}
     </>
   );
 }

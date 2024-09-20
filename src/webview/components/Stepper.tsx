@@ -1,4 +1,6 @@
 import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Variant, Chapter } from "js-slang/dist/types";
+import { createContext, runInContext, type IOptions } from "js-slang";
 import React, { useEffect, useState } from "react";
 
 function Stepper() {
@@ -6,9 +8,20 @@ function Stepper() {
   const [stepNo, setStepNo] = useState(0);
 
   useEffect(() => {
-    const messageListener = (event: MessageEvent) => {
+    const messageListener = async (event: MessageEvent) => {
       const message = event.data; // The JSON data our extension sent
-      setSteps(message);
+      // throw "jsesos";
+
+      const chapter = Chapter.SOURCE_1;
+      const runnercontext = createContext(chapter, Variant.NON_DET);
+      // const options: Partial<IOptions> = {
+      //   executionMethod: "interpreter",
+      //   useSubst: true,
+      // };
+      // const output = await runInContext("1+1;", runnercontext, options);
+      // console.log(output);
+
+      // setSteps(message);
     };
     window.addEventListener("message", messageListener);
 
