@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 function Stepper() {
   const [steps, setSteps] = useState<any[]>([]);
   const [stepNo, setStepNo] = useState(0);
+  const [tab, setTab] = useState(null);
 
   useEffect(() => {
     const messageListener = async (event: MessageEvent) => {
@@ -18,10 +19,17 @@ function Stepper() {
         executionMethod: "interpreter",
         useSubst: true,
       };
-      const output = await runInContext("1+1;", runnercontext, options);
+      console.log(`the message is ${message}`);
+      const output = await runInContext(message, runnercontext, options);
       console.log(output);
+      console.log(runnercontext);
 
-      // setSteps(message);
+      if (output.status !== "finished") {
+        return;
+      }
+
+      setSteps(output.value);
+      setTab(runnercontext.moduleContexts["rune"].tabs[0]);
     };
     window.addEventListener("message", messageListener);
 
@@ -39,6 +47,14 @@ function Stepper() {
   const stepPrevious = () => {
     setStepNo((stepNo) => stepNo - 1);
   };
+
+  let ModuleTab = null;
+  if (tab) {
+    console.log("tab is nonempty");
+    ModuleTab = tab;
+  } else {
+    console.log("tab is empty");
+  }
 
   return (
     <>
@@ -79,6 +95,7 @@ function Stepper() {
           <pre>{steps[stepNo].explanation}</pre>
         </>
       ) : null}
+      {ModuleTab && <ModuleTab />}
     </>
   );
 }

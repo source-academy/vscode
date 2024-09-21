@@ -7,9 +7,9 @@ import * as path from "path";
 function App() {
   const [state, setState] = useState(0);
 
-  console.log(fs);
-  console.log(path);
-  console.log(fs);
+  // console.log(fs);
+  // console.log(path);
+  // console.log(fs);
 
   return (
     <>

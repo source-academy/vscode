@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Send the stepper result to the webview (but sleep 1s to wait for script to load)
       setTimeout(() => {
-        panel.webview.postMessage("hi");
+        panel.webview.postMessage(text);
       }, 1000);
     }),
   );

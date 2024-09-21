@@ -28,8 +28,8 @@ async function main() {
     plugins: [
       polyfillNode({
         polyfills: {
-          fs: true
-        }
+          fs: true,
+        },
         // globals: {
         //   __dirname: false,
         //   __filename: false,
@@ -48,8 +48,8 @@ async function main() {
     ],
     define: {
       // Define __filename and __dirname for browser environments
-      __filename: JSON.stringify('/static/js/filename.js'), // You can customize this path
-      __dirname: JSON.stringify('/static/js'),
+      __filename: JSON.stringify("/static/js/filename.js"), // You can customize this path
+      __dirname: JSON.stringify("/static/js"),
     },
   });
 
