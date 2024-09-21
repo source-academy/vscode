@@ -11,7 +11,6 @@ async function main() {
     outfile: "./out/extension.js",
     sourcemap: true,
     external: ["vscode"],
-    // logLevel: 'verbose',
   });
 
   const webviewCtx = await esbuild.context({
@@ -26,7 +25,7 @@ async function main() {
     outfile: "./out/webview.js",
     plugins: [
       // polyfillNode({
-      // Options (optional)
+      //   // Options (optional)
       // }),
     ],
     define: {
@@ -34,7 +33,6 @@ async function main() {
       __filename: JSON.stringify("/static/js/filename.js"), // You can customize this path
       __dirname: JSON.stringify("/static/js"),
     },
-    // logLevel: 'verbose',
   });
 
   // Run both configurations at the same time

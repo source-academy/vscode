@@ -8,10 +8,12 @@ function App() {
     <>
       {"HEEEEEEEEEEEEEEEE"}
       {state}
-      <button onClick={() => {
-        setState(state => state + 1);
-      }}></button>
-      {/* <Stepper />; */}
+      <button
+        onClick={() => {
+          setState((state) => state + 1);
+        }}
+      ></button>
+      <Stepper />;
     </>
   );
 }

@@ -38,8 +38,31 @@
   "dependencies": {
     "@blueprintjs/core": "^5.12.0",
     "@blueprintjs/icons": "^5.12.0",
+    "constants-browserify": "^1.0.0",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
     "fast-levenshtein": "^3.0.0",
-    "react": "^18.3.1"
+    "https-browserify": "^1.0.0",
+    "js-slang": "link:../source-academy/js-slang/",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "timers-browserify": "^2.0.12",
+    "url": "^0.11.4"
   },
-  "browser": {}
+  "browser": {
+    "child_process": false,
+    "constants": "constants-browserify",
+    "fs": false,
+    "http": "stream-http",
+    "https": "https-browserify",
+    "os": "os-browserify/browser",
+    "path/posix": "path-browserify",
+    "process/browser": "process/browser",
+    "stream": "stream-browserify",
+    "timers": "timers-browserify",
+    "url": "url/"
+  }
 }
