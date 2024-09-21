@@ -18,27 +18,27 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Get text from active document and run it through the stepper
       const text = editor.document.getText();
-      const chapter = Chapter.SOURCE_1;
-      const runnercontext = createContext(chapter, Variant.NON_DET);
-      const options: Partial<IOptions> = {
-        executionMethod: "interpreter",
-        useSubst: true,
-      };
-      // @ts-ignore
-      global.window = 1;
-      const output = await runInContext(text, runnercontext, options);
-      console.log(process.versions);
+      // const chapter = Chapter.SOURCE_1;
+      // const runnercontext = createContext(chapter, Variant.NON_DET);
+      // const options: Partial<IOptions> = {
+      //   executionMethod: "interpreter",
+      //   useSubst: true,
+      // };
+      // // @ts-ignore
+      // global.window = 1;
+      // const output = await runInContext(text, runnercontext, options);
+      // console.log(process.versions);
 
       // await fetch("https://source-academy.github.io/modules/bundles/rune.js");
 
-      if (output.status !== "finished") {
-        vscode.window.showErrorMessage(
-          runnercontext.errors[0].toString(),
-          // "The stepper did not complete successfully, please check your code.",
-        );
-        return;
-      }
-      const stepperResult = output.value;
+      // if (output.status !== "finished") {
+      //   vscode.window.showErrorMessage(
+      //     runnercontext.errors[0].toString(),
+      //     // "The stepper did not complete successfully, please check your code.",
+      //   );
+      //   return;
+      // }
+      // const stepperResult = output.value;
 
       const panel = vscode.window.createWebviewPanel(
         "stepper",
@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Send the stepper result to the webview (but sleep 1s to wait for script to load)
       setTimeout(() => {
-        panel.webview.postMessage(stepperResult);
+        panel.webview.postMessage("hi");
       }, 1000);
     }),
   );
@@ -81,17 +81,17 @@ function getWebviewContent(
     vscode.Uri.joinPath(context.extensionUri, "out", "webview.js"),
   );
 
+  // <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src *; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
   return `<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src *; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
       <title>Cat Coding</title>
     </head>
     <body>
       <div id="root"></div>
-      <script nonce="${nonce}" src="${scriptUri}"></script>
+      <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
     </body>
   </html>`;
 }
