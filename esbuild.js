@@ -1,10 +1,8 @@
 // @ts-check
 const esbuild = require("esbuild");
 const polyfillNode = require("esbuild-plugin-polyfill-node").polyfillNode;
-const ignorePlugin = require("esbuild-plugin-ignore")
-const fileloc = require("esbuild-plugin-fileloc").filelocPlugin
-
-
+const ignorePlugin = require("esbuild-plugin-ignore");
+const fileloc = require("esbuild-plugin-fileloc").filelocPlugin;
 
 async function main() {
   const extensionCtx = await esbuild.context({
@@ -29,14 +27,17 @@ async function main() {
     outfile: "./out/webview.js",
     plugins: [
       polyfillNode({
-        globals: {
-          __dirname: false,
-          __filename: false,
-          process: true,
+        polyfills: {
+          fs: true
         }
+        // globals: {
+        //   __dirname: false,
+        //   __filename: false,
+        //   process: true,
+        // },
         // Options (optional)
       }),
-      fileloc(),
+      // fileloc(),
       // ignorePlugin([
       //   {
 
@@ -44,14 +45,12 @@ async function main() {
 
       //   },
       // ])
-
     ],
-    // define: {
-    //   // Define __filename and __dirname for browser environments
-    //   __filename: JSON.stringify('/static/js/filename.js'), // You can customize this path
-    //   __dirname: JSON.stringify('/static/js'),
-    // },
-
+    define: {
+      // Define __filename and __dirname for browser environments
+      __filename: JSON.stringify('/static/js/filename.js'), // You can customize this path
+      __dirname: JSON.stringify('/static/js'),
+    },
   });
 
   // Run both configurations at the same time
