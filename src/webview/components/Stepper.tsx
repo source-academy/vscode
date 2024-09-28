@@ -3,9 +3,43 @@ import { Variant, Chapter } from "js-slang/dist/types";
 import { createContext, runInContext, type IOptions } from "js-slang";
 import React, { useEffect, useState } from "react";
 
+import * as bpcore from "@blueprintjs/core";
+import * as bpicons from "@blueprintjs/icons";
+import * as jsslang from "js-slang";
+import * as jsslangDist from "js-slang/dist";
+import lodash from "lodash";
+import phaser from "phaser";
+import JSXRuntime from "react/jsx-runtime";
+import ace from "react-ace";
+import ReactDOM from "react-dom";
+import { useDispatch } from "react-redux";
+
+const requireProvider = (x: string) => {
+  const exports = {
+    react: React,
+    "react/jsx-runtime": JSXRuntime,
+    "react-ace": ace,
+    "react-dom": ReactDOM,
+    "@blueprintjs/core": bpcore,
+    "@blueprintjs/icons": bpicons,
+    "js-slang": jsslang,
+    "js-slang/dist": jsslangDist,
+    lodash,
+    phaser,
+  };
+
+  if (!(x in exports))
+    throw new Error(`Dynamic require of ${x} is not supported`);
+  return exports[x as keyof typeof exports] as any;
+};
+type RawTab = (provider: ReturnType<typeof requireProvider>) => {
+  default: any;
+};
+
 function Stepper() {
   const [steps, setSteps] = useState<any[]>([]);
   const [stepNo, setStepNo] = useState(0);
+  const [tab, setTab] = useState(null);
 
   useEffect(() => {
     const messageListener = async (event: MessageEvent) => {
@@ -18,10 +52,30 @@ function Stepper() {
         executionMethod: "interpreter",
         useSubst: true,
       };
-      const output = await runInContext("1+1;", runnercontext, options);
+      console.log(`the message is ${message}`);
+      console.log({
+        location: "sa-vscode:Stepper:index",
+        require: require,
+      });
+      const output = await runInContext(message, runnercontext, options);
       console.log(output);
+      console.log(runnercontext);
 
-      // setSteps(message);
+      if (output.status !== "finished") {
+        return;
+      }
+
+      setSteps(output.value);
+      // @ts-ignore
+
+      const hydrated = Object.values(runnercontext.moduleContexts)
+        .flatMap(({ tabs }) => tabs ?? [])
+        .map((rawTab: RawTab) => {
+          const { default: content } = rawTab(requireProvider);
+          return content;
+        });
+      console.log(hydrated);
+      setTab(hydrated[0].body({ context: runnercontext }));
     };
     window.addEventListener("message", messageListener);
 
@@ -39,6 +93,14 @@ function Stepper() {
   const stepPrevious = () => {
     setStepNo((stepNo) => stepNo - 1);
   };
+
+  let ModuleTab = null;
+  if (tab) {
+    console.log("tab is nonempty");
+    ModuleTab = tab;
+  } else {
+    console.log("tab is empty");
+  }
 
   return (
     <>
@@ -79,6 +141,10 @@ function Stepper() {
           <pre>{steps[stepNo].explanation}</pre>
         </>
       ) : null}
+      {
+        // @ts-ignore
+        ModuleTab
+      }
     </>
   );
 }
