@@ -8,10 +8,10 @@ function Stepper() {
   const [stepNo, setStepNo] = useState(0);
   const [tab, setTab] = useState(null);
 
-  useEffect(() => {
-    const messageListener = async (event: MessageEvent) => {
-      const message = event.data; // The JSON data our extension sent
-      // throw "jsesos";
+    useEffect(() => {
+    async function test() {
+      const message = `1+1;`;
+
 
       const chapter = Chapter.SOURCE_1;
       const runnercontext = createContext(chapter, Variant.NON_DET);
@@ -29,14 +29,11 @@ function Stepper() {
       }
 
       setSteps(output.value);
-      // setTab(runnercontext.moduleContexts["rune"].tabs[0]);
-    };
-    window.addEventListener("message", messageListener);
+    }
+    test();
 
-    return () => {
-      window.removeEventListener("message", messageListener);
-    };
   }, []);
+
 
   const hasRunCode = steps.length > 0;
 
