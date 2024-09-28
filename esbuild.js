@@ -1,8 +1,6 @@
 // @ts-check
 const esbuild = require("esbuild");
 const polyfillNode = require("esbuild-plugin-polyfill-node").polyfillNode;
-const ignorePlugin = require("esbuild-plugin-ignore");
-const fileloc = require("esbuild-plugin-fileloc").filelocPlugin;
 
 async function main() {
   const extensionCtx = await esbuild.context({
@@ -20,31 +18,14 @@ async function main() {
     bundle: true,
     format: "esm",
     platform: "browser",
-    // target: "node20",
-    // format: "cjs",
     sourcemap: true,
-    // external: ["fs", "constants", "path"],
     outfile: "./out/webview.js",
     plugins: [
       polyfillNode({
         polyfills: {
           fs: true
         }
-        // globals: {
-        //   __dirname: false,
-        //   __filename: false,
-        //   process: true,
-        // },
-        // Options (optional)
       }),
-      // fileloc(),
-      // ignorePlugin([
-      //   {
-
-      //     // resourceRegExp: /.*node_modules\/@ts-morph\/common\/dist\/typescript\.js$/
-
-      //   },
-      // ])
     ],
     define: {
       // Define __filename and __dirname for browser environments
