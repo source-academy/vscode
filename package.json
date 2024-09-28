@@ -53,7 +53,7 @@
     "i18next-browser-languagedetector": "^7.2.1",
     "java-slang": "^1.0.13",
     "js-cookie": "^3.0.5",
-    "js-slang": "npm:@heyzec/js-slang@^1.0.74",
+    "js-slang": "file:.yalc/js-slang",
     "js-yaml": "^4.1.0",
     "konva": "^9.2.0",
     "lodash": "^4.17.21",
@@ -158,19 +158,8 @@
     "typescript-eslint": "^8.1.0",
     "url": "^0.11.1",
     "webpack-bundle-analyzer": "^4.9.0",
-    "webpack-dev-server": "^5.1.0"
-  },
-  "browserslist": {
-    "production": [
-      "Firefox ESR",
-      "last 2 chrome versions",
-      "last 2 safari versions"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "webpack-dev-server": "^5.1.0",
+    "yalc": "^1.0.0-pre.53"
   },
   "engines": {
     "vscode": "^1.84.2"

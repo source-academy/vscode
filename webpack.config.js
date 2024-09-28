@@ -82,6 +82,7 @@ const webviewConfig = {
   //     }
   //   });
   // });
+  target: 'web',
   context: path.resolve(__dirname, 'src/webview'),
   entry: './index.tsx',
   output: {
