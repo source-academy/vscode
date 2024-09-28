@@ -53,6 +53,7 @@
     "i18next-browser-languagedetector": "^7.2.1",
     "java-slang": "^1.0.13",
     "js-cookie": "^3.0.5",
+    "js-slang": "npm:@heyzec/js-slang@^1.0.74",
     "js-yaml": "^4.1.0",
     "konva": "^9.2.0",
     "lodash": "^4.17.21",
@@ -93,13 +94,13 @@
     "ts-loader": "^9.5.1",
     "unified": "^11.0.0",
     "uuid": "^9.0.0",
+    "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
     "xml2js": "^0.6.0",
     "yareco": "^0.1.5"
   },
   "devDependencies": {
-    "//": "See: https://github.com/facebook/react/issues/28313#issuecomment-2076798972, https://github.com/t3-oss/create-t3-turbo/issues/984#issuecomment-2076413457",
     "@babel/core": "^7.25.2",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-typescript": "^7.24.7",
@@ -156,9 +157,6 @@
     "typescript-eslint": "^8.1.0",
     "url": "^0.11.1",
     "webpack-bundle-analyzer": "^4.9.0"
-  },
-  "resolutions": {
-    "**/gl": "^8.0.2"
   },
   "browserslist": {
     "production": [
