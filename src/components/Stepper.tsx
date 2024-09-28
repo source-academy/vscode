@@ -29,7 +29,7 @@ function Stepper() {
       }
 
       setSteps(output.value);
-      setTab(runnercontext.moduleContexts["rune"].tabs[0]);
+      // setTab(runnercontext.moduleContexts["rune"].tabs[0]);
     };
     window.addEventListener("message", messageListener);
 
@@ -95,8 +95,8 @@ function Stepper() {
           <pre>{steps[stepNo].explanation}</pre>
         </>
       ) : null}
-      {ModuleTab && <ModuleTab />}
     </>
   );
+  // {ModuleTab && <ModuleTab />}
 }
 export default Stepper;

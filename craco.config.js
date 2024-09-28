@@ -2,6 +2,12 @@
 const webpack = require('webpack');
 
 const cracoConfig = {
+  presets: [
+    "@babel/preset-env",         // Transpile modern JavaScript syntax
+    "@babel/preset-react",       // Transpile JSX syntax
+    "@babel/preset-typescript"   // Transpile TypeScript (if using TS)
+  ],
+
   webpack: {
     configure: webpackConfig => {
       // avoid the entire process.env being inserted into the service worker
