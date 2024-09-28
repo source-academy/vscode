@@ -2,9 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 
-import { Variant, Chapter } from "js-slang/dist/types";
-import { createContext, runInContext, type IOptions } from "js-slang";
-
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -18,21 +15,6 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Get text from active document and run it through the stepper
       const text = editor.document.getText();
-      const chapter = Chapter.SOURCE_1;
-      const runnercontext = createContext(chapter, Variant.NON_DET);
-      const options: Partial<IOptions> = {
-        executionMethod: "interpreter",
-        useSubst: true,
-      };
-      const output = await runInContext(text, runnercontext, options);
-
-      if (output.status !== "finished") {
-        vscode.window.showErrorMessage(
-          "The stepper did not complete successfully, please check your code.",
-        );
-        return;
-      }
-      const stepperResult = output.value;
 
       const panel = vscode.window.createWebviewPanel(
         "stepper",
@@ -44,10 +26,14 @@ export function activate(context: vscode.ExtensionContext) {
       );
       panel.webview.html = getWebviewContent(context, panel);
 
-      // Send the stepper result to the webview (but sleep 1s to wait for script to load)
-      setTimeout(() => {
-        panel.webview.postMessage(stepperResult);
-      }, 1000);
+      panel.webview.onDidReceiveMessage(
+        (message) => {
+          // Send the stepper result to the webview
+          panel.webview.postMessage(text);
+        },
+        undefined,
+        context.subscriptions,
+      );
     }),
   );
 }
@@ -69,23 +55,21 @@ function getWebviewContent(
   // Use a nonce to whitelist which scripts can be run
   const nonce = getNonce();
 
-  const webview = panel.webview;
-
   const scriptUri = panel.webview.asWebviewUri(
     vscode.Uri.joinPath(context.extensionUri, "out", "webview.js"),
   );
 
+  // <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src *; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
   return `<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
       <title>Cat Coding</title>
     </head>
     <body>
       <div id="root"></div>
-      <script nonce="${nonce}" src="${scriptUri}"></script>
+      <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
     </body>
   </html>`;
 }

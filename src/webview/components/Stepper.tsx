@@ -1,17 +1,47 @@
 import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Variant, Chapter } from "js-slang/dist/types";
+import { createContext, runInContext, type IOptions } from "js-slang";
 import React, { useEffect, useState } from "react";
+import { requireProvider } from "../utils/requireProvider";
 
 function Stepper() {
   const [steps, setSteps] = useState<any[]>([]);
   const [stepNo, setStepNo] = useState(0);
+  const [tab, setTab] = useState(null);
+
+  const messageListener = async (event: MessageEvent) => {
+    const message = event.data;
+
+    const chapter = Chapter.SOURCE_1;
+    const runnerContext = createContext(chapter, Variant.NON_DET);
+    const options: Partial<IOptions> = {
+      executionMethod: "interpreter",
+      useSubst: true,
+    };
+
+    const output = await runInContext(message, runnerContext, options);
+    console.log({
+      runnerContext,
+      output,
+    });
+
+    if (output.status !== "finished") {
+      return;
+    }
+
+    setSteps(output.value);
+
+    const hydrated = Object.values(runnerContext.moduleContexts)
+      .flatMap(({ tabs }) => tabs ?? [])
+      .map((rawTab) => {
+        const { default: content } = rawTab(requireProvider);
+        return content;
+      });
+    setTab(hydrated[0].body({ context: runnerContext }));
+  };
 
   useEffect(() => {
-    const messageListener = (event: MessageEvent) => {
-      const message = event.data; // The JSON data our extension sent
-      setSteps(message);
-    };
     window.addEventListener("message", messageListener);
-
     return () => {
       window.removeEventListener("message", messageListener);
     };
@@ -66,6 +96,7 @@ function Stepper() {
           <pre>{steps[stepNo].explanation}</pre>
         </>
       ) : null}
+      {tab}
     </>
   );
 }

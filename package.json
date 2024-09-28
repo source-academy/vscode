@@ -26,8 +26,9 @@
     "watch": "node ./esbuild.js --watch"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.9",
     "@types/node": "^22.5.4",
-    "@types/react": "^18.3.5",
+    "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@types/vscode": "^1.93.0",
     "esbuild": "^0.23.1",
@@ -36,11 +37,16 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@blueprintjs/core": "^5.12.0",
-    "@blueprintjs/icons": "^5.12.0",
+    "@blueprintjs/core": "^5.13.0",
+    "@blueprintjs/icons": "^5.13.0",
+    "esbuild-plugin-fileloc": "^0.0.6",
+    "esbuild-plugin-ignore": "^1.1.1",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
     "fast-levenshtein": "^3.0.0",
-    "js-slang": "npm:@heyzec/js-slang@^1.0.74",
+    "js-slang": "file:.yalc/js-slang",
+    "phaser": "^3.85.2",
     "react": "^18.3.1",
+    "react-ace": "^12.0.0",
     "react-dom": "^18.3.1"
   }
 }
