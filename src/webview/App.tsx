@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Stepper from "./components/Stepper";
-import * as fs from "fs";
-import * as path from "path";
-// import * as fs from 'fs';
 
 function App() {
-  const [state, setState] = useState(0);
+  // @ts-ignore
+  const vscode = acquireVsCodeApi();
 
-  // console.log(fs);
-  // console.log(path);
-  // console.log(fs);
+  useEffect(() => {
+    vscode.postMessage({
+      command: "alert",
+      text: "ready",
+    });
+  });
 
   return (
     <>
-      {"HEEEEEEEEEEEEEEEE"}
-      {state}
-      <button
-        onClick={() => {
-          setState((state) => state + 1);
-        }}
-      ></button>
       <Stepper />;
     </>
   );

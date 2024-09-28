@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-check: Show errors in this js file
 const esbuild = require("esbuild");
 const polyfillNode = require("esbuild-plugin-polyfill-node").polyfillNode;
 
@@ -23,14 +23,19 @@ async function main() {
     plugins: [
       polyfillNode({
         polyfills: {
-          fs: true
-        }
+          fs: true,
+        },
+        // globals: {
+        //   __filename: true,
+        //   __dirname: true,
+        // }
       }),
     ],
     define: {
-      // Define __filename and __dirname for browser environments
-      __filename: JSON.stringify('/static/js/filename.js'), // You can customize this path
-      __dirname: JSON.stringify('/static/js'),
+      // Needed for the web environment
+      // Inject these globals manually as esbuild-plugin-polyfill-node is not doing it so
+      __filename: JSON.stringify("/index.js"),
+      __dirname: JSON.stringify("/"),
     },
   });
 
