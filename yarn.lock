@@ -5684,6 +5684,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/vscode@npm:^1.93.0":
+  version: 1.93.0
+  resolution: "@types/vscode@npm:1.93.0"
+  checksum: 5b62f6a333e21ba1687b93270489dcaf84a7474085b1bc440431508ff3bd0aebadd238812ddaa7e66a95417bb8d01c7b7ce5b6d8968bda5ac8f2fc7919366f9f
+  languageName: node
+  linkType: hard
+
 "@types/ws@npm:^8.5.1":
   version: 8.5.4
   resolution: "@types/ws@npm:8.5.4"
@@ -10876,6 +10883,7 @@ __metadata:
     "@types/redux-mock-store": "npm:^1.0.3"
     "@types/showdown": "npm:^2.0.1"
     "@types/uuid": "npm:^9.0.0"
+    "@types/vscode": "npm:^1.93.0"
     "@types/xml2js": "npm:^0.4.11"
     ace-builds: "npm:^1.4.14"
     acorn: "npm:^8.9.0"

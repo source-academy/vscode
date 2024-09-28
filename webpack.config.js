@@ -1,7 +1,56 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const webpack = require('webpack');
+const path = require('path');
 
-const config = {
+const commonResolveExtensions = ['.ts', '.tsx', '.js', '.jsx', '.json'];
+
+const commonRules = [
+  {
+    test: /\.(js|jsx)$/,   // Match .js and .jsx files
+    exclude: /node_modules/,
+    use: {
+      loader: 'babel-loader',
+    },
+  },
+  {
+    test: /\.(ts|tsx)$/,   // Match .ts and .tsx files (if using TypeScript)
+    exclude: /node_modules/,
+    use: {
+      loader: 'ts-loader',
+    },
+  },
+  {
+    test: /\.css$/,        // Optional: CSS handling
+    use: ['style-loader', 'css-loader'],
+  },
+  {
+    test: /\.mjs$/,
+    include: /node_modules/,
+    type: 'javascript/auto',
+    resolve: {
+      fullySpecified: false
+    },
+  },
+];
+
+const extensionConfig = {
+  entry: './src/extension.ts',
+  output: {
+    path: `${__dirname}/out`,
+    filename: "extension.js",
+  },
+  externals: {
+    vscode: 'vscode',
+  },
+  module: {
+    rules: commonRules,
+  },
+  resolve: {
+    extensions: commonResolveExtensions,
+  },
+};
+
+const webviewConfig = {
   // // avoid the entire process.env being inserted into the service worker
   // // if SW_EXCLUDE_REGEXES is unset
   // const definePlugin = webpackConfig.plugins.find(
@@ -29,20 +78,23 @@ const config = {
   //     }
   //   });
   // });
-  entry: './src/index.tsx',
+  context: path.resolve(__dirname, 'src/webview'),
+  entry: './index.tsx',
+  output: {
+    path: `${__dirname}/out`,
+    filename: "webview.js",
+    webassemblyModuleFilename: 'static/[hash].module.wasm'
+  },
 
   // See https://webpack.js.org/configuration/experiments/#experiments.
   experiments: {
     syncWebAssembly: true
   },
-  output: {
-    webassemblyModuleFilename: 'static/[hash].module.wasm'
-  },
 
   // Polyfill Node.js core modules.
   // An empty implementation (false) is provided when there is no browser equivalent.
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    extensions: commonResolveExtensions,
     fallback: {
       'child_process': false,
       'constants': require.resolve('constants-browserify'),
@@ -60,34 +112,7 @@ const config = {
 
   // workaround .mjs files by Acorn
   module: {
-    rules: [
-      {
-        test: /\.(js|jsx)$/,   // Match .js and .jsx files
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
-      },
-      {
-        test: /\.(ts|tsx)$/,   // Match .ts and .tsx files (if using TypeScript)
-        exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
-        },
-      },
-      {
-        test: /\.css$/,        // Optional: CSS handling
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.mjs$/,
-        include: /node_modules/,
-        type: 'javascript/auto',
-        resolve: {
-          fullySpecified: false
-        },
-      },
-    ],
+    rules: commonRules,
 
     // Workaround to suppress warnings caused by ts-morph in js-slang
     noParse: /node_modules\/@ts-morph\/common\/dist\/typescript\.js$/,
@@ -130,5 +155,8 @@ const replaceSlashes = target => {
   return target.replaceAll('/', '[/\\\\]');
 };
 
-module.exports = config;
+module.exports = [
+  extensionConfig,
+  webviewConfig,
+];
 
