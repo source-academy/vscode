@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "frontend",
+  "name": "sa-vscode",
   "version": "1.4.3",
   "scripts-info": {
     "analyze": "Analyze bundle size breakdown",
@@ -170,6 +170,19 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "vscode": "^1.84.2"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sa-vscode.stepper",
+        "title": "Run the current file through the Stepper"
+      }
     ]
   }
 }

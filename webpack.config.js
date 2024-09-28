@@ -34,18 +34,22 @@ const commonRules = [
 ];
 
 const extensionConfig = {
+  target: 'webworker',
   entry: './src/extension.ts',
   output: {
-    path: `${__dirname}/out`,
+    path: path.resolve(__dirname, 'out'),
     filename: "extension.js",
+    libraryTarget: 'commonjs2',
+    devtoolModuleFilenameTemplate: '../[resource-path]'
   },
   externals: {
-    vscode: 'vscode',
+    vscode: 'commonjs vscode',
   },
   module: {
     rules: commonRules,
   },
   resolve: {
+    mainFields: ['browser', 'module', 'main'],
     extensions: commonResolveExtensions,
   },
 };
