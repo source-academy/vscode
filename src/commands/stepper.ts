@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import { MessageType, RunStepperMessage } from "../utils/messages";
+import { LANGUAGES, languageToChapter } from "../utils/languages";
 
 export async function runStepper(context: vscode.ExtensionContext) {
   const editor = vscode.window.activeTextEditor;
@@ -20,10 +22,20 @@ export async function runStepper(context: vscode.ExtensionContext) {
   );
   panel.webview.html = getWebviewContent(context, panel);
 
+  let language: string | undefined = context.workspaceState.get("language");
+  if (!language) {
+    language = LANGUAGES.SOURCE_1;
+  }
+
   panel.webview.onDidReceiveMessage(
-    (message) => {
+    (_message) => {
       // Send the stepper result to the webview
-      panel.webview.postMessage(text);
+      const message: RunStepperMessage = {
+        type: MessageType.StartStepperMessage,
+        chapter: languageToChapter(language),
+        code: text,
+      };
+      panel.webview.postMessage(message);
     },
     undefined,
     context.subscriptions,

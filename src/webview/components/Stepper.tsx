@@ -3,6 +3,7 @@ import { Variant, Chapter } from "js-slang/dist/types";
 import { createContext, runInContext, type IOptions } from "js-slang";
 import React, { useEffect, useState } from "react";
 import { requireProvider } from "../utils/requireProvider";
+import { Message, MessageType } from "../../utils/messages";
 
 function Stepper() {
   const [steps, setSteps] = useState<any[]>([]);
@@ -10,16 +11,19 @@ function Stepper() {
   const [tab, setTab] = useState(null);
 
   const messageListener = async (event: MessageEvent) => {
-    const message = event.data;
+    const message: Message = event.data;
+    if (message.type !== MessageType.StartStepperMessage) {
+      return;
+    }
 
-    const chapter = Chapter.SOURCE_1;
+    const chapter = message.chapter;
     const runnerContext = createContext(chapter, Variant.NON_DET);
     const options: Partial<IOptions> = {
       executionMethod: "interpreter",
       useSubst: true,
     };
 
-    const output = await runInContext(message, runnerContext, options);
+    const output = await runInContext(message.code, runnerContext, options);
     console.log({
       runnerContext,
       output,
