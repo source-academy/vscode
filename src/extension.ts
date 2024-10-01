@@ -2,16 +2,21 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { runStepper } from "./commands/stepper";
-
+import { runLanguagePicker } from "./commands/language";
+import { setupStatusBar } from "./statusbar/status";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
+    vscode.commands.registerCommand("sa-vscode.pick", () =>
+      runLanguagePicker(context),
+    ),
     vscode.commands.registerCommand("sa-vscode.stepper", () =>
       runStepper(context),
     ),
   );
-}
 
+  context.subscriptions.push(setupStatusBar(context));
+}
 // This method is called when your extension is deactivated
 export function deactivate() {}
