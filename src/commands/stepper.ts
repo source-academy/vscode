@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { MessageType, RunStepperMessage } from "../utils/messages";
+import { MessageType, RunStepperMessage, TextMessage } from "../utils/messages";
 import { LANGUAGES, languageToChapter } from "../utils/languages";
 
 export async function runStepper(context: vscode.ExtensionContext) {
@@ -36,6 +36,24 @@ export async function runStepper(context: vscode.ExtensionContext) {
         code: text,
       };
       panel.webview.postMessage(message);
+
+      // setInterval(() => {
+      //   const text = editor.document.getText();
+      //   const message: TextMessage = {
+      //     type: MessageType.TextMessage,
+      //     code: text,
+      //   };
+      //   panel.webview.postMessage(message);
+      // }, 1000);
+
+      vscode.workspace.onDidChangeTextDocument(() => {
+        const text = editor.document.getText();
+        const message: TextMessage = {
+          type: MessageType.TextMessage,
+          code: text,
+        };
+        panel.webview.postMessage(message);
+      });
     },
     undefined,
     context.subscriptions,
