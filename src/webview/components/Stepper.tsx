@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import { requireProvider } from "../utils/requireProvider";
 import { Message, MessageType } from "../../utils/messages";
 
+const audioCtx = new window.AudioContext();
+
 function Stepper() {
   const [steps, setSteps] = useState<any[]>([]);
   const [stepNo, setStepNo] = useState(0);
@@ -51,6 +53,24 @@ function Stepper() {
     };
   }, []);
 
+  const textListener = async (event: MessageEvent) => {
+    const message: Message = event.data;
+    if (message.type !== MessageType.TextMessage) {
+      return;
+    }
+    console.log("Need to forward to iframe");
+
+    const iframe = document.getElementById("my-iframe");
+    const contentWindow = iframe.contentWindow;
+    contentWindow.postMessage(message.code, "*");
+  };
+  useEffect(() => {
+    window.addEventListener("message", textListener);
+    return () => {
+      window.removeEventListener("message", textListener);
+    };
+  }, []);
+
   const hasRunCode = steps.length > 0;
 
   const stepNext = () => {
@@ -64,6 +84,14 @@ function Stepper() {
   return (
     <>
       <h1>Source Academy Stepper</h1>
+      <iframe
+        id="my-iframe"
+        src="http://localhost:8000/playground"
+        width="100%"
+        height="1000px"
+        frameborder="0"
+        allowfullscreen
+      ></iframe>
       <ButtonGroup>
         <Button
           // disabled={!hasRunCode || !hasPreviousFunctionCall}
