@@ -12,13 +12,41 @@
     "commands": [
       {
         "command": "sa-vscode.pick",
-        "title": "Source Academy: Select Source chapter"
+        "title": "Source Academy: Select Source chapter",
+        "icon": "assets/sa.svg"
       },
       {
         "command": "sa-vscode.show-panel",
         "title": "Source Academy: Show the Source Academy panel"
       }
-    ]
+    ],
+    "views": {
+      "source-academy": [
+        {
+          "id": "nodeDependencies",
+          "name": "Node Dependencies",
+          "icon": "media/dep.svg",
+          "contextualTitle": "Package Explorer"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "source-academy",
+          "title": "Source Academy",
+          "icon": "assets/sa.svg"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "sa-vscode.stepper",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts-info": {
     "compile": "Build bundles",
