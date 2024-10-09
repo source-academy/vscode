@@ -18,7 +18,7 @@ function App() {
 
   return (
     <>
-      <Stepper />;
+      <Stepper />
     </>
   );
 }
