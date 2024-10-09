@@ -1,9 +1,0 @@
-{
-  "version": "v1",
-  "packages": {
-    "js-slang": {
-      "signature": "b5e6c9a95d153d943f6c9897f9b4fdc1",
-      "file": true
-    }
-  }
-}

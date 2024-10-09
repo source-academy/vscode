@@ -15,8 +15,8 @@
         "title": "Source Academy: Select Source chapter"
       },
       {
-        "command": "sa-vscode.stepper",
-        "title": "Source Academy: Run the current file through the Stepper"
+        "command": "sa-vscode.show-panel",
+        "title": "Source Academy: Show the Source Academy panel"
       }
     ]
   },
@@ -49,7 +49,7 @@
     "esbuild-plugin-ignore": "^1.1.1",
     "esbuild-plugin-polyfill-node": "^0.3.0",
     "fast-levenshtein": "^3.0.0",
-    "js-slang": "file:.yalc/js-slang",
+    "js-slang": "^1.0.76",
     "phaser": "^3.85.2",
     "react": "^18.3.1",
     "react-ace": "^12.0.0",

@@ -1,20 +1,36 @@
 import * as vscode from "vscode";
-import { MessageType, RunStepperMessage, TextMessage } from "../utils/messages";
-import { LANGUAGES, languageToChapter } from "../utils/languages";
+import { MessageType, TextMessage } from "../utils/messages";
+import { LANGUAGES } from "../utils/languages";
 
-export async function runStepper(context: vscode.ExtensionContext) {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    vscode.window.showErrorMessage("Please open an active editor!");
-    return;
+export async function showPanel(context: vscode.ExtensionContext) {
+  let language: string | undefined = context.workspaceState.get("language");
+  if (!language) {
+    language = LANGUAGES.SOURCE_1;
   }
 
-  // Get text from active document and run it through the stepper
-  const text = editor.document.getText();
+  function sendEditorContents(editor?: vscode.TextEditor) {
+    if (!editor) {
+      editor = vscode.window.activeTextEditor;
+    }
+    if (!editor) {
+      vscode.window.showErrorMessage("Please open an active editor!");
+      return;
+    }
+    // Get text from active document and send it to Ace Editor in the frontend
+    const text = editor.document.getText();
+    const message: TextMessage = {
+      type: MessageType.TextMessage,
+      code: text,
+    };
+    panel.webview.postMessage(message);
+  }
+
+  // Get a reference to the active editor (before the focus is switched to our newly created webview)
+  const activeEditor = vscode.window.activeTextEditor;
 
   const panel = vscode.window.createWebviewPanel(
-    "stepper",
-    "Stepper",
+    "source-academy-panel",
+    "Source Academy",
     vscode.ViewColumn.Beside,
     {
       enableScripts: true, // Enable scripts in the webview
@@ -22,29 +38,10 @@ export async function runStepper(context: vscode.ExtensionContext) {
   );
   panel.webview.html = getWebviewContent(context, panel);
 
-  let language: string | undefined = context.workspaceState.get("language");
-  if (!language) {
-    language = LANGUAGES.SOURCE_1;
-  }
-
   panel.webview.onDidReceiveMessage(
     (_message) => {
-      // Send the stepper result to the webview
-      const message: RunStepperMessage = {
-        type: MessageType.StartStepperMessage,
-        chapter: languageToChapter(language),
-        code: text,
-      };
-      panel.webview.postMessage(message);
-
-      vscode.workspace.onDidChangeTextDocument(() => {
-        const text = editor.document.getText();
-        const message: TextMessage = {
-          type: MessageType.TextMessage,
-          code: text,
-        };
-        panel.webview.postMessage(message);
-      });
+      sendEditorContents(activeEditor);
+      vscode.workspace.onDidChangeTextDocument(() => sendEditorContents());
     },
     undefined,
     context.subscriptions,
