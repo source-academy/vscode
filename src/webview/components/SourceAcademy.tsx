@@ -1,18 +1,11 @@
-import { Button, ButtonGroup } from "@blueprintjs/core";
-import { Variant, Chapter } from "js-slang/dist/types";
-import { createContext, runInContext, type IOptions } from "js-slang";
-import React, { useEffect, useState } from "react";
-import { requireProvider } from "../utils/requireProvider";
+import React, { useEffect } from "react";
 import {
   Message,
   MessageType,
-  RunStepperMessage,
   TextMessage,
 } from "../../utils/messages";
 
 const FRONTEND_ELEMENT_ID = "frontend";
-
-function handleStartMessage(message: RunStepperMessage) {}
 
 function handleTextUpdatedMessage(message: TextMessage) {
   const iframe: HTMLIFrameElement = document.getElementById(
@@ -29,16 +22,13 @@ function handleTextUpdatedMessage(message: TextMessage) {
 function messageListener(event: MessageEvent) {
   const message: Message = event.data;
   switch (message.type) {
-    case MessageType.StartStepperMessage:
-      handleStartMessage(message as RunStepperMessage);
-      break;
     case MessageType.TextMessage:
       handleTextUpdatedMessage(message as TextMessage);
       break;
   }
 }
 
-function Stepper() {
+function SourceAcademy() {
   useEffect(() => {
     window.addEventListener("message", messageListener);
     return () => {
@@ -67,4 +57,4 @@ function Stepper() {
     </>
   );
 }
-export default Stepper;
+export default SourceAcademy;
