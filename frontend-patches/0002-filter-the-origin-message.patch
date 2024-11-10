@@ -1,7 +1,7 @@
 From 906d8662feeb9fb5ff30b7078531b51e0a952d61 Mon Sep 17 00:00:00 2001
 From: heyzec <61238538+heyzec@users.noreply.github.com>
 Date: Wed, 9 Oct 2024 14:06:29 +0800
-Subject: [PATCH 2/3] filter the origin message
+Subject: [PATCH 2/4] filter the origin message
 
 ---
  src/index.tsx | 4 ++++
@@ -23,5 +23,5 @@ index 9a612caa..e19927eb 100644
    if (elements.length === 0) {
      return;
 -- 
-2.45.1
+2.47.0
 

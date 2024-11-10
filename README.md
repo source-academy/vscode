@@ -21,6 +21,7 @@ Experimental project for running Source Academy within Visual Studio Code.
 1. Apply the patches in the `frontend-patches` folder:
    ```
    cd frontend
+   # These patches are generated with `git format-patch -<n> HEAD`
    git apply --verbose ../frontend-patches/*.patch
    ```
 1. Continue to follow instructions in frontend/README.md to start the frontend.
