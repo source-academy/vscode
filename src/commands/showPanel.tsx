@@ -2,12 +2,71 @@ import * as vscode from "vscode";
 // Allow using JSX within this file by overriding our own createElement function
 import React from "../utils/FakeReact";
 
-import { MessageType, TextMessage } from "../utils/messages";
+import Messages, { MessageType } from "../utils/messages";
 import { LANGUAGES } from "../utils/languages";
 import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
+import { Editor } from "../utils/editor";
 
 const FRONTEND_ELEMENT_ID = "frontend";
+
+let panel: vscode.WebviewPanel | null = null;
+// This needs to be a reference to active
+let activeEditor: Editor | null = null;
+
+const messageQueue: MessageType[] = [];
+let handling = false;
+
+async function handleMessage(message: MessageType) {
+  messageQueue.push(message);
+  if (handling) {
+    return;
+  }
+  handling = true;
+
+  while (messageQueue.length > 0) {
+    const message = messageQueue.shift()!;
+    console.log(`${Date.now()} Beginning handleMessage: ${message.type}`);
+    switch (message.type) {
+      case "WebviewStarted":
+        panel!.webview.postMessage(Messages.WebviewStarted());
+        break;
+      case "NewEditor":
+        activeEditor = await Editor.create(
+          message.assessmentName,
+          message.questionId,
+        );
+        console.log(
+          `EXTENSION: NewEditor: activeEditor set to ${activeEditor.assessmentName}_${activeEditor.questionId}`,
+        );
+        activeEditor.onChange((editor) => {
+          const code = editor.getText();
+          if (!code) {
+            return;
+          }
+          if (editor !== activeEditor) {
+            console.log(
+              `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
+            );
+          }
+          const message = Messages.Text(code);
+          console.log(`Sending message: ${JSON.stringify(message)}`);
+          panel!.webview.postMessage(message);
+        });
+        break;
+      case "Text":
+        if (!activeEditor) {
+          console.log("ERROR: activeEditor is not set");
+          break;
+        }
+        activeEditor.replace(message.code, "Text");
+        break;
+    }
+    console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
+  }
+
+  handling = false;
+}
 
 export async function showPanel(context: vscode.ExtensionContext) {
   let language: string | undefined = context.workspaceState.get("language");
@@ -15,27 +74,10 @@ export async function showPanel(context: vscode.ExtensionContext) {
     language = LANGUAGES.SOURCE_1;
   }
 
-  function sendEditorContents(editor?: vscode.TextEditor) {
-    if (!editor) {
-      editor = vscode.window.activeTextEditor;
-    }
-    if (!editor) {
-      vscode.window.showErrorMessage("Please open an active editor!");
-      return;
-    }
-    // Get text from active document and send it to Ace Editor in the frontend
-    const text = editor.document.getText();
-    const message: TextMessage = {
-      type: MessageType.TextMessage,
-      code: text,
-    };
-    panel.webview.postMessage(message);
-  }
-
   // Get a reference to the active editor (before the focus is switched to our newly created webview)
-  const activeEditor = vscode.window.activeTextEditor;
+  // firstEditor = vscode.window.activeTextEditor!;
 
-  const panel = vscode.window.createWebviewPanel(
+  panel = vscode.window.createWebviewPanel(
     "source-academy-panel",
     "Source Academy",
     vscode.ViewColumn.Beside,
@@ -45,17 +87,13 @@ export async function showPanel(context: vscode.ExtensionContext) {
   );
 
   panel.webview.onDidReceiveMessage(
-    (_message) => {
-      sendEditorContents(activeEditor);
-      vscode.workspace.onDidChangeTextDocument(() => sendEditorContents());
-    },
+    handleMessage,
     undefined,
     context.subscriptions,
   );
 
   const frontendUrl = config.frontendUrl;
 
-  // panel.webview.html = getWebviewContent(context, panel);
   setWebviewContent(
     panel,
     context,

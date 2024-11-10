@@ -1,26 +1,21 @@
 import React, { useEffect } from "react";
-import { Message, MessageType, TextMessage } from "../../utils/messages";
+import { MessageType, sendToFrontend } from "../../utils/messages";
 
-const FRONTEND_ELEMENT_ID = "frontend";
+// This function is provided by vscode extension
+// @ts-expect-error: Cannot find name 'acquireVsCodeApi'.ts(2304)
+const vscode = acquireVsCodeApi();
 
-function handleTextUpdatedMessage(message: TextMessage) {
-  const iframe: HTMLIFrameElement = document.getElementById(
-    FRONTEND_ELEMENT_ID,
-  ) as HTMLIFrameElement;
-  const contentWindow = iframe.contentWindow;
-  if (!contentWindow) {
-    return;
-  }
-  // TODO: Don't use '*'
-  contentWindow.postMessage(message.code, "*");
-}
+// These functions act as a bridge between the webview and the extension by passing messages verbatim
 
 function messageListener(event: MessageEvent) {
-  const message: Message = event.data;
-  switch (message.type) {
-    case MessageType.TextMessage:
-      handleTextUpdatedMessage(message as TextMessage);
-      break;
+  const message: MessageType = event.data;
+  if (event.origin.startsWith("vscode-webview://")) {
+    sendToFrontend(document, message);
+    return;
+  }
+  if (event.origin === "http://localhost:8000") {
+    vscode.postMessage(message);
+    return;
   }
 }
 
