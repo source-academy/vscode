@@ -18,7 +18,17 @@
         "command": "sa-vscode.show-panel",
         "title": "Source Academy: Show the Source Academy panel"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Source Academy",
+      "properties": {
+        "sa-vscode.frontendUrl": {
+          "type": "string",
+          "default": "http://localhost:8000/playground",
+          "description": "URL to the Source Academy frontend"
+        }
+      }
+    }
   },
   "scripts-info": {
     "compile": "Build bundles",

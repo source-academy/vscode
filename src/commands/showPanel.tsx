@@ -5,6 +5,7 @@ import React from "../utils/FakeReact";
 import { MessageType, TextMessage } from "../utils/messages";
 import { LANGUAGES } from "../utils/languages";
 import { setWebviewContent } from "../utils/webview";
+import config from "../utils/config";
 
 const FRONTEND_ELEMENT_ID = "frontend";
 
@@ -52,6 +53,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
     context.subscriptions,
   );
 
+  const frontendUrl = config.frontendUrl;
+
   // panel.webview.html = getWebviewContent(context, panel);
   setWebviewContent(
     panel,
@@ -64,9 +67,10 @@ export async function showPanel(context: vscode.ExtensionContext) {
     >
       <iframe
         id={FRONTEND_ELEMENT_ID}
-        src="http://localhost:8000/playground"
+        src={frontendUrl}
         width="100%"
         height="100%"
+        // @ts-ignore
         frameborder="0"
         allowfullscreen
       ></iframe>
