@@ -1,36 +1,8 @@
-// This file is originally created in https://github.com/source-academy/sa-vscode/blob/main/src/utils/messages.ts
-// It also needs to be copied to source-academy/frontend:src/features/vscode/messages.ts
-// Ideally it is split into multiple files, but for ease of copying, it is kept as one file.
-
-// ================================================================================
-// Message type definitions
-// ================================================================================
-const Messages = createMessages({
-  /** Sent from the iframe to the extension */
-  ExtensionPing: () => ({}),
-  /** Sent from the extension to the iframe */
-  ExtensionPong: (token: string | null) => ({ token }),
-  IsVsc: () => ({}),
-  NewEditor: (assessmentName: string, questionId: number, code: string) => ({
-    assessmentName,
-    questionId,
-    code,
-  }),
-  Text: (code: string) => ({ code }),
-});
-
-export default Messages;
-
-// ================================================================================
-// Code for type generation
-// ================================================================================
-
-// Define BaseMessage to be the base type for all messages, such that all messages have a type field
+// This file also needs to be copied to source-academy/frontend
 type BaseMessage<T extends string, P extends object> = {
   type: T;
 } & P;
 
-// A helper function to create messages dynamically from schema (hoisted!)
 function createMessages<T extends Record<string, (...args: any[]) => object>>(
   creators: T,
 ): {
@@ -49,26 +21,26 @@ function createMessages<T extends Record<string, (...args: any[]) => object>>(
   ) as any;
 }
 
-// Define MessageTypes as a map of each key in Messages to its specific message type
-type MessageTypes = {
+const Messages = createMessages({
+  WebviewStarted: (token: string | null) => ({ token }),
+  IsVsc: () => ({}),
+  NewEditor: (assessmentName: string, questionId: number, code: string) => ({
+    assessmentName,
+    questionId,
+    code,
+  }),
+  Text: (code: string) => ({ code }),
+});
+
+export default Messages;
+
+// Define MessageTypes to map each key in Messages to its specific message type
+export type MessageTypes = {
   [K in keyof typeof Messages]: ReturnType<(typeof Messages)[K]>;
 };
 
 // Define MessageType as a union of all message types
 export type MessageType = MessageTypes[keyof MessageTypes];
-
-// Also define MessageTypeNames as an "enum" to avoid hardcoding strings
-type KeysUnion<T> = keyof T extends string ? keyof T : never;
-type MessageTypeNames = KeysUnion<MessageTypes>;
-export const MessageTypeNames = Object.freeze(
-  Object.fromEntries(
-    Object.keys({} as MessageTypes).map((key) => [key, key]),
-  ) as { [K in MessageTypeNames]: K },
-);
-
-// ================================================================================
-// Wrapper functions
-// ================================================================================
 
 export const FRONTEND_ELEMENT_ID = "frontend";
 

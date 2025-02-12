@@ -31,7 +31,7 @@ async function handleMessage(
     const message = messageQueue.shift()!;
     console.log(`${Date.now()} Beginning handleMessage: ${message.type}`);
     switch (message.type) {
-      case MessageTypeNames.ExtensionPing:
+      case "WebviewStarted":
         let state = context.globalState.get("token") ?? null;
 
         const token = state ? JSON.stringify(state) : null;
@@ -45,12 +45,12 @@ async function handleMessage(
         //   token = JSON.stringify(token);
         // }
 
-        panel!.webview.postMessage(Messages.ExtensionPong(token));
+        panel!.webview.postMessage(Messages.WebviewStarted(token));
         if (token) {
           context.globalState.update("token", undefined);
         }
         break;
-      case MessageTypeNames.NewEditor:
+      case "NewEditor":
         activeEditor = await Editor.create(
           message.assessmentName,
           message.questionId,
@@ -73,7 +73,7 @@ async function handleMessage(
           panel!.webview.postMessage(message);
         });
         break;
-      case MessageTypeNames.Text:
+      case "Text":
         if (!activeEditor) {
           console.log("ERROR: activeEditor is not set");
           break;
