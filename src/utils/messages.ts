@@ -9,7 +9,7 @@ const Messages = createMessages({
   /** Sent from the iframe to the extension */
   ExtensionPing: () => ({}),
   /** Sent from the extension to the iframe */
-  ExtensionPong: () => ({}),
+  ExtensionPong: (token: string | null) => ({ token }),
   IsVsc: () => ({}),
   NewEditor: (assessmentName: string, questionId: number, code: string) => ({
     assessmentName,
