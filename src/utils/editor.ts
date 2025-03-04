@@ -28,7 +28,10 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
-  static async create(assessmentName: string, questionId: number) {
+  static async create(
+    assessmentName: string,
+    questionId: number,
+  ): Promise<Editor> {
     const self = new Editor(assessmentName, questionId);
     self.assessmentName = assessmentName;
     self.questionId = questionId;
@@ -51,7 +54,7 @@ export class Editor {
 
     const editor = await vscode.window.showTextDocument(vscode.Uri.file(path), {
       preview: false,
-      viewColumn: vscode.ViewColumn.Beside,
+      viewColumn: vscode.ViewColumn.One,
     });
 
     self.editor = editor;
