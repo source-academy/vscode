@@ -55,6 +55,7 @@ async function handleMessage(
           message.assessmentName,
           message.questionId,
         );
+        panel?.reveal(vscode.ViewColumn.Two)
         console.log(
           `EXTENSION: NewEditor: activeEditor set to ${activeEditor.assessmentName}_${activeEditor.questionId}`,
         );
@@ -102,6 +103,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
     vscode.ViewColumn.Beside,
     {
       enableScripts: true, // Enable scripts in the webview
+      retainContextWhenHidden: true
     },
   );
 
