@@ -28,7 +28,10 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
-  static async create(assessmentName: string, questionId: number): Promise<Editor> {
+  static async create(
+    assessmentName: string,
+    questionId: number,
+  ): Promise<Editor> {
     const self = new Editor(assessmentName, questionId);
     self.assessmentName = assessmentName;
     self.questionId = questionId;
