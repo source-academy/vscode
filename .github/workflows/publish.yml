@@ -1,0 +1,56 @@
+name: Publish
+on:
+  push:
+    # Assume only such tags are on main branch
+    tags: ["v*"]
+
+jobs:
+  check:
+    uses: ./.github/workflows/check.yml
+
+  version:
+    needs: check
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.detect.outputs.VERSION }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Ensure commit is tagged
+        id: detect
+        run: |
+          if [[ "v$(jq -r '.version' package.json)" != "$GITHUB_REF_NAME" ]]; then
+            echo "Expected version $GITHUB_REF_NAME, found $(jq -r '.version' package.json)"
+            exit 1
+          fi
+
+          version=$(jq -r '.version' package.json)
+          echo Version: "$version"
+          echo "VERSION=$version" >> $GITHUB_OUTPUT
+
+  release:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Package
+        run: yarn run package
+      - name: Publish extension on Releases tab
+        uses: softprops/action-gh-release@v2
+        with:
+          files: source-academy-${{ needs.version.outputs.VERSION }}.vsix
+      - name: Publish extension on VS Code Marketplace
+        run: yarn run vsce publish --packagePath $EXTENSION_ID-${{ needs.version.outputs.VERSION }}.vsix
+        env:
+          EXTENSION_ID: "source-academy"
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

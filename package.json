@@ -1,6 +1,14 @@
 {
   "name": "source-academy",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "publisher": "source-academy",
+  "displayName": "Source Academy",
+  "description": "VS Code extension for Source Academy",
+  "repository": "https://github.com/source-academy/vscode",
+  "categories": [
+    "Programming Languages",
+    "Education"
+  ],
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -48,13 +56,15 @@
   "scripts-info": {
     "compile": "Build bundles",
     "format": "Format source code",
-    "watch": "Recompile source code on change"
+    "watch": "Recompile source code on change",
+    "package": "Package the extension into .vsix format"
   },
   "scripts": {
     "compile": "node ./esbuild.js",
     "format": "yarn prettier . --write",
     "vscode:prepublish": "yarn run compile",
     "watch": "node ./esbuild.js --watch",
+    "package": "echo y | yarn run vsce package",
     "test:syntax": "vscode-tmgrammar-test ./tests/syntaxes/*",
     "test": "yarn test:syntax"
   },
@@ -62,6 +72,7 @@
     "@types/lodash": "^4.17.9",
     "@types/node": "^22.5.4",
     "@types/vscode": "^1.93.0",
+    "@vscode/vsce": "^3.2.2",
     "esbuild": "^0.25.0",
     "husky": "^8.0.0",
     "prettier": "^3.3.3",

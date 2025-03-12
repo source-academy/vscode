@@ -1,0 +1,8 @@
+name: Lint and test feature branches
+on:
+  push:
+    branches-ignore: ["main"]
+
+jobs:
+  check:
+    uses: ./.github/workflows/check.yml
