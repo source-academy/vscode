@@ -14,7 +14,9 @@
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
         nodejs_20
-        yarn
+        (yarn.override {
+          nodejs = nodejs_20;
+        })
 
         # The following is only needed by js-slang, to remove in the future
         # Additional libs needed by yarn when installing
