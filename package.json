@@ -61,8 +61,6 @@
   "devDependencies": {
     "@types/lodash": "^4.17.9",
     "@types/node": "^22.5.4",
-    "@types/react": "^18.3.10",
-    "@types/react-dom": "^18.3.0",
     "@types/vscode": "^1.93.0",
     "esbuild": "^0.25.0",
     "husky": "^8.0.0",
@@ -71,16 +69,10 @@
     "vscode-tmgrammar-test": "^0.1.3"
   },
   "dependencies": {
-    "@blueprintjs/core": "^5.13.0",
-    "@blueprintjs/icons": "^5.13.0",
     "esbuild-plugin-fileloc": "^0.0.6",
     "esbuild-plugin-ignore": "^1.1.1",
     "esbuild-plugin-polyfill-node": "^0.3.0",
-    "fast-levenshtein": "^3.0.0",
-    "js-slang": "^1.0.76",
-    "phaser": "^3.85.2",
-    "react": "^18.3.1",
-    "react-ace": "^12.0.0",
-    "react-dom": "^18.3.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
