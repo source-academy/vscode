@@ -7,7 +7,7 @@ export function setupStatusBar(context: vscode.ExtensionContext) {
     vscode.StatusBarAlignment.Right,
     100,
   );
-  languageStatusBarItem.command = "sa-vscode.pick";
+  languageStatusBarItem.command = "source-academy.pick";
   languageStatusBarItem.tooltip = "Change Source chapter";
   updateStatusBar(context);
   languageStatusBarItem.show();

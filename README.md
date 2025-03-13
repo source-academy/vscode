@@ -1,4 +1,4 @@
-# sa-vscode
+# VS Code
 
 Experimental project for running Source Academy within Visual Studio Code.
 

@@ -10,7 +10,7 @@ export default new Proxy<EnvVarProxyType>(
       _: typeof envConfig,
       name: K,
     ): EnvVarType<K> {
-      const saConfigs = vscode.workspace.getConfiguration("sa-vscode");
+      const saConfigs = vscode.workspace.getConfiguration("source-academy");
       const value = saConfigs.get<EnvVarType<K>>(name);
 
       if (value === undefined) {

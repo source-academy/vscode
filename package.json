@@ -1,5 +1,5 @@
 {
-  "name": "sa-vscode",
+  "name": "source-academy",
   "version": "0.0.0",
   "engines": {
     "vscode": "^1.93.0"
@@ -11,18 +11,18 @@
   "contributes": {
     "commands": [
       {
-        "command": "sa-vscode.pick",
+        "command": "source-academy.pick",
         "title": "Source Academy: Select Source chapter"
       },
       {
-        "command": "sa-vscode.show-panel",
+        "command": "source-academy.show-panel",
         "title": "Source Academy: Show the Source Academy panel"
       }
     ],
     "configuration": {
       "title": "Source Academy",
       "properties": {
-        "sa-vscode.frontendUrl": {
+        "source-academy.frontendUrl": {
           "type": "string",
           "default": "http://localhost:8000/playground",
           "description": "URL to the Source Academy frontend"

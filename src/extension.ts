@@ -8,10 +8,10 @@ import { setupStatusBar } from "./statusbar/status";
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
-    vscode.commands.registerCommand("sa-vscode.pick", () =>
+    vscode.commands.registerCommand("source-academy.pick", () =>
       runLanguagePicker(context),
     ),
-    vscode.commands.registerCommand("sa-vscode.show-panel", () =>
+    vscode.commands.registerCommand("source-academy.show-panel", () =>
       showPanel(context),
     ),
   );
