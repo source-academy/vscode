@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { setupStatusBar } from "./statusbar/status";
-import { evalEditor } from "./commands/evalEditor";
 import { registerAllCommands } from "./commands";
 import { activateLspClient, deactivateLspClient } from "./lsp/client";
 
@@ -14,6 +13,17 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(setupStatusBar(context));
 
   activateLspClient(context);
+  vscode.window.registerUriHandler({
+    handleUri(uri: vscode.Uri) {
+      const searchParams = new URLSearchParams(uri.query);
+      const accessToken = searchParams.get("access_token");
+      vscode.window.showInformationMessage(`Access: ${accessToken}`);
+      const refreshToken = searchParams.get("refresh_token");
+      vscode.window.showInformationMessage(`Refresh: ${refreshToken}`);
+
+      context.globalState.update("token", { accessToken, refreshToken });
+    },
+  });
 }
 
 // This method is called when your extension is deactivated
