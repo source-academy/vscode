@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { showPanel } from "./commands/showPanel";
 import { runLanguagePicker } from "./commands/language";
 import { setupStatusBar } from "./statusbar/status";
+import { evalEditor } from "./commands/evalEditor";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -13,6 +14,9 @@ export function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand("source-academy.show-panel", () =>
       showPanel(context),
+    ),
+    vscode.commands.registerCommand("source-academy.eval-editor", () =>
+      evalEditor(context),
     ),
   );
 

@@ -17,6 +17,7 @@ const Messages = createMessages({
     code,
   }),
   Text: (code: string) => ({ code }),
+  EvalEditor: () => ({}),
 });
 
 export default Messages;

@@ -25,6 +25,10 @@
       {
         "command": "source-academy.show-panel",
         "title": "Source Academy: Show the Source Academy panel"
+      },
+      {
+        "command": "source-academy.eval-editor",
+        "title": "Source Academy: Run Code in Editor"
       }
     ],
     "configuration": {
@@ -50,6 +54,12 @@
         "language": "source",
         "scopeName": "source.source",
         "path": "./syntaxes/source.tmLanguage.json"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "source-academy.eval-editor",
+        "key": "shift+enter"
       }
     ]
   },

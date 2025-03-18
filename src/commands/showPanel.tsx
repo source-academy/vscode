@@ -120,3 +120,12 @@ export async function showPanel(context: vscode.ExtensionContext) {
     </div>,
   );
 }
+
+// TODO: Move this to a util file
+export async function postMessageToPanel(message: MessageType) {
+  if (!panel) {
+    console.error("ERROR: panel is not set");
+    return;
+  }
+  panel.webview.postMessage(message);
+}
