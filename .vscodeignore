@@ -1,1 +1,11 @@
-tests/
+# Ignore everything
+*
+*/**
+
+# Whitelist what you need
+!.vscodeignore
+!out/*
+!assets/*
+!language-configuration.json
+!LICENSE
+!snippets.json
