@@ -9,6 +9,7 @@
     "Programming Languages",
     "Education"
   ],
+  "icon": "assets/icon.png",
   "engines": {
     "vscode": "^1.93.0"
   },
@@ -46,7 +47,11 @@
         "id": "source",
         "extensions": [
           ".sjs"
-        ]
+        ],
+        "icon": {
+          "light": "assets/icon.png",
+          "dark": "assets/icon.png"
+        }
       }
     ],
     "grammars": [
