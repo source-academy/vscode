@@ -4,7 +4,7 @@
     {
       "label": "Compile",
       "type": "shell",
-      "command": "yarn compile",
+      "command": "yarn run build",
       "group": {
         "kind": "build",
         "isDefault": true

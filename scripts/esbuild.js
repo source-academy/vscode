@@ -2,7 +2,7 @@
 const esbuild = require("esbuild");
 const polyfillNode = require("esbuild-plugin-polyfill-node").polyfillNode;
 
-async function main() {
+async function build() {
   const extensionCtx = await esbuild.context({
     entryPoints: ["./src/extension.ts"],
     bundle: true,
@@ -48,9 +48,13 @@ async function main() {
   } else {
     Promise.all([extensionCtx.rebuild(), webviewCtx.rebuild()]).then(() => {
       console.log("Builds completed successfully.");
-      process.exit(0);
+      // process.exit(0);
     });
   }
 }
 
-main();
+module.exports = { build };
+
+if (require.main === module) {
+  build();
+}

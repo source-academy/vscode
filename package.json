@@ -69,16 +69,17 @@
     ]
   },
   "scripts-info": {
-    "compile": "Build bundles",
+    "build": "Builds/obtains bundles required for the extension",
+    "watch": "Rebuild source code in this repo on change",
     "format": "Format source code",
-    "watch": "Recompile source code on change",
+    "vscode:prepublish": "Step called by vsce before packaging/publishing (VSC's convention)",
     "package": "Package the extension into .vsix format"
   },
   "scripts": {
-    "compile": "node ./esbuild.js",
-    "format": "yarn prettier . --write",
-    "vscode:prepublish": "yarn run compile",
+    "build": "node scripts/build.js",
     "watch": "node ./esbuild.js --watch",
+    "format": "yarn prettier . --write",
+    "vscode:prepublish": "yarn run build",
     "package": "echo y | yarn run vsce package",
     "test:syntax": "vscode-tmgrammar-test ./tests/syntaxes/*",
     "test": "yarn test:syntax"
@@ -99,6 +100,7 @@
     "esbuild-plugin-ignore": "^1.1.1",
     "esbuild-plugin-polyfill-node": "^0.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "vscode-languageclient": "^9.0.1"
   }
 }
