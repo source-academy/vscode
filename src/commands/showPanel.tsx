@@ -12,7 +12,8 @@ const FRONTEND_ELEMENT_ID = "frontend";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
-let activeEditor: Editor | null = null;
+// TODO: Fix this ugly code!
+export let activeEditor: Editor | null = null;
 
 const messageQueue: MessageType[] = [];
 let handling = false;
@@ -36,6 +37,7 @@ async function handleMessage(
         break;
       case MessageTypeNames.NewEditor:
         activeEditor = await Editor.create(
+          message.workspaceLocation,
           message.assessmentName,
           message.questionId,
         );
@@ -44,6 +46,7 @@ async function handleMessage(
           `EXTENSION: NewEditor: activeEditor set to ${activeEditor.assessmentName}_${activeEditor.questionId}`,
         );
         activeEditor.onChange((editor) => {
+          const workspaceLocation = editor.workspaceLocation;
           const code = editor.getText();
           if (!code) {
             return;
@@ -53,7 +56,7 @@ async function handleMessage(
               `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
             );
           }
-          const message = Messages.Text(code);
+          const message = Messages.Text(workspaceLocation, code);
           console.log(`Sending message: ${JSON.stringify(message)}`);
           panel!.webview.postMessage(message);
         });

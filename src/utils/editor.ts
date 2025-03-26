@@ -2,24 +2,31 @@ import * as vscode from "vscode";
 import * as os from "os";
 
 import config from "../utils/config";
+import { VscWorkspaceLocation } from "./messages";
 
 export class Editor {
   editor?: vscode.TextEditor;
+  workspaceLocation: VscWorkspaceLocation;
   assessmentName: string;
   questionId: number;
   onChangeCallback?: (editor: Editor) => void;
-  replaceTime: number = 0;
-  nBursty: number = 0;
   code: string | null = null;
 
-  constructor(assessmentName: string, questionId: number) {
+  // For debugging purposes
+  replaceTime: number = 0;
+  nBursty: number = 0;
+
+  constructor(
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+  ) {
+    this.workspaceLocation = workspaceLocation;
     this.assessmentName = assessmentName;
     this.questionId = questionId;
   }
 
-  /**
-   * For debugging purposes
-   */
+  /** For debugging purposes */
   log(text: string) {
     console.log(`${this.editor?.document.fileName.split("/").at(-1)} ${text}`);
   }
@@ -29,10 +36,11 @@ export class Editor {
   }
 
   static async create(
+    workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
     questionId: number,
   ): Promise<Editor> {
-    const self = new Editor(assessmentName, questionId);
+    const self = new Editor(workspaceLocation, assessmentName, questionId);
     self.assessmentName = assessmentName;
     self.questionId = questionId;
 
