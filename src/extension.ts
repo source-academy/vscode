@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { setupStatusBar } from "./statusbar/status";
 import { registerAllCommands } from "./commands";
 import { activateLspClient, deactivateLspClient } from "./lsp/client";
+import { showPanel } from "./commands/showPanel";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -16,12 +17,17 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.window.registerUriHandler({
     handleUri(uri: vscode.Uri) {
       const searchParams = new URLSearchParams(uri.query);
-      const accessToken = searchParams.get("access_token");
-      vscode.window.showInformationMessage(`Access: ${accessToken}`);
-      const refreshToken = searchParams.get("refresh_token");
-      vscode.window.showInformationMessage(`Refresh: ${refreshToken}`);
+      const code = searchParams.get("code");
+      vscode.window.showInformationMessage(`Code: ${code}`);
+      const provider = searchParams.get("provider");
+      vscode.window.showInformationMessage(`Provider: ${provider}`);
 
-      context.globalState.update("token", { accessToken, refreshToken });
+      // context.globalState.update("token", {
+      //   accessToken: code,
+      //   refreshToken: provider,
+      // });
+      const url = `http://localhost:4000/v2/auth/exchange/?code=${code}&provider=${provider}`;
+      showPanel(context, url);
     },
   });
 }

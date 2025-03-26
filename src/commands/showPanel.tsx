@@ -69,8 +69,10 @@ async function handleMessage(
           }
           if (editor !== activeEditor) {
             console.log(
-              `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
+              `EXTENSION: Editor is no longer active, skipping onChange`,
+              `User edited ${editor.assessmentName}_${editor.questionId}, active is ${activeEditor?.assessmentName}_${activeEditor?.questionId}`,
             );
+            return;
           }
           const message = Messages.Text(workspaceLocation, code);
           console.log(`Sending message: ${JSON.stringify(message)}`);
@@ -91,7 +93,8 @@ async function handleMessage(
   handling = false;
 }
 
-export async function showPanel(context: vscode.ExtensionContext) {
+export async function showPanel(context: vscode.ExtensionContext, url: string) {
+  vscode.window.showInformationMessage(`showPanel caleld with ${url}`);
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {
     language = LANGUAGES.SOURCE_1;
@@ -129,7 +132,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
     >
       <iframe
         id={FRONTEND_ELEMENT_ID}
-        src={frontendUrl}
+        src={url || frontendUrl}
+        // src={"vscode://source-academy.source-academy/sso"}
         width="100%"
         height="100%"
         // @ts-ignore
