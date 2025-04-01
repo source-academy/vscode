@@ -29,13 +29,14 @@ async function build() {
   await buildExtAndWebview();
 
   // Step 2: Download the Source LSP server
-  const version = "0.0.6";
+  // TODO: This is not ideal, LSP version is no longer locked. See issue#5
+  // const version = "0.0.8";
   const lspFilename = "source-lsp.js";
-  const url = `https://github.com/mug1wara26/source-lsp/releases/download/v${version}/${lspFilename}`;
+  const url = `https://github.com/mug1wara26/source-lsp/releases/latest/download/${lspFilename}`;
   const outputPath = path.join(outputFolder, lspFilename); // Save in the same directory
   // Function below handles the 302 Found redirection from GitHub
   await downloadFile(url, outputPath);
-  console.log("LSP server downloaded.");
+  console.log(`LSP server downloaded from ${url}`);
 }
 
 /**
