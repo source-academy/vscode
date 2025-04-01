@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import Messages, { sendToFrontend } from "../utils/messages";
-import { activeEditor, postMessageToPanel } from "./showPanel";
+import Messages from "../utils/messages";
+import { activeEditor, sendToFrontendWrapped } from "./showPanel";
 
 export async function evalEditor(context: vscode.ExtensionContext) {
   if (!activeEditor) {
@@ -10,5 +10,5 @@ export async function evalEditor(context: vscode.ExtensionContext) {
     return;
   }
   const message = Messages.EvalEditor(activeEditor.workspaceLocation);
-  postMessageToPanel(message);
+  sendToFrontendWrapped(message);
 }

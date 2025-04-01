@@ -2,7 +2,11 @@ import * as vscode from "vscode";
 // Allow using JSX within this file by overriding our own createElement function
 import React from "../utils/FakeReact";
 
-import Messages, { MessageType, MessageTypeNames } from "../utils/messages";
+import Messages, {
+  MessageType,
+  MessageTypeNames,
+  sendToFrontend,
+} from "../utils/messages";
 import { LANGUAGES } from "../utils/languages";
 import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
@@ -33,7 +37,7 @@ async function handleMessage(
     console.log(`${Date.now()} Beginning handleMessage: ${message.type}`);
     switch (message.type) {
       case MessageTypeNames.ExtensionPing:
-        panel!.webview.postMessage(Messages.ExtensionPong());
+        sendToFrontend(panel, Messages.ExtensionPong(null));
         break;
       case MessageTypeNames.NewEditor:
         activeEditor = await Editor.create(
@@ -58,7 +62,7 @@ async function handleMessage(
           }
           const message = Messages.Text(workspaceLocation, code);
           console.log(`Sending message: ${JSON.stringify(message)}`);
-          panel!.webview.postMessage(message);
+          sendToFrontend(panel, message);
         });
         break;
       case MessageTypeNames.Text:
@@ -125,10 +129,10 @@ export async function showPanel(context: vscode.ExtensionContext) {
 }
 
 // TODO: Move this to a util file
-export async function postMessageToPanel(message: MessageType) {
+export async function sendToFrontendWrapped(message: MessageType) {
   if (!panel) {
     console.error("ERROR: panel is not set");
     return;
   }
-  panel.webview.postMessage(message);
+  sendToFrontend(panel, message);
 }
