@@ -105,6 +105,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
 
   const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
 
+  // equivalent to panel.webview.html = ...
   setWebviewContent(
     panel,
     context,
@@ -124,6 +125,12 @@ export async function showPanel(context: vscode.ExtensionContext) {
         allowfullscreen
       ></iframe>
     </div>,
+  );
+
+  panel.iconPath = vscode.Uri.joinPath(
+    context.extensionUri,
+    "assets",
+    "icon.png",
   );
 }
 
