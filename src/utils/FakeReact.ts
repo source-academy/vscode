@@ -1,4 +1,5 @@
 // Taken from https://dev.to/jaredkent/faking-react-for-vscode-webviews-2258
+import type { JSX } from "react";
 
 export function createElement(
   type: string,

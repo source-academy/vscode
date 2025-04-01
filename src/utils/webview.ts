@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { getNonce } from "./nonce";
+import type { JSX } from "react";
 
 /**
  * Convenience function to set html content of a webview panel via JSX
