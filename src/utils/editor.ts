@@ -3,6 +3,7 @@ import * as os from "os";
 
 import config from "../utils/config";
 import { VscWorkspaceLocation } from "./messages";
+import path from "path";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -44,26 +45,36 @@ export class Editor {
     self.assessmentName = assessmentName;
     self.questionId = questionId;
 
-    let basePath = config.basePath;
-    if (!basePath) {
-      basePath = `${os.homedir()}/.sourceacademy`;
+    let workspaceFolder = config.workspaceFolder;
+    if (!workspaceFolder) {
+      workspaceFolder = path.join(os.homedir(), ".sourceacademy");
+      // TODO: Prompt the user to make this folder the default, and then set back to the config store.
+    } else if (!path.isAbsolute(workspaceFolder)) {
+      workspaceFolder = path.join(os.homedir(), workspaceFolder);
     }
-    const path = `${basePath}/${assessmentName}_${questionId}.js`;
-    await vscode.workspace.fs.readFile(vscode.Uri.file(path)).then(
+
+    const filePath = path.join(
+      workspaceFolder,
+      `${assessmentName}_${questionId}.js`,
+    );
+    await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       () => null,
       async () => {
-        self.log(`Opening file failed, creating at ${path}`);
+        self.log(`Opening file failed, creating at ${filePath}`);
         await vscode.workspace.fs.writeFile(
-          vscode.Uri.file(path),
+          vscode.Uri.file(filePath),
           new TextEncoder().encode(""),
         );
       },
     );
 
-    const editor = await vscode.window.showTextDocument(vscode.Uri.file(path), {
+    const editor = await vscode.window.showTextDocument(
+      vscode.Uri.file(filePath),
+      {
       preview: false,
       viewColumn: vscode.ViewColumn.One,
-    });
+      },
+    );
 
     self.editor = editor;
     vscode.workspace.onDidChangeTextDocument(() => {

@@ -11,8 +11,7 @@ import { LANGUAGES } from "../utils/languages";
 import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
 import { Editor } from "../utils/editor";
-
-const FRONTEND_ELEMENT_ID = "frontend";
+import { FRONTEND_ELEMENT_ID } from "../constants";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
@@ -104,7 +103,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
     context.subscriptions,
   );
 
-  const frontendUrl = config.frontendUrl;
+  const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
 
   setWebviewContent(
     panel,

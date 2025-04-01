@@ -4,14 +4,15 @@
  */
 //
 import React, { useEffect } from "react";
-import { MessageType } from "../../utils/messages";
+import { MessageType, MessageTypeNames } from "../../utils/messages";
+import { FRONTEND_ELEMENT_ID } from "../../constants";
 
 // This function is provided by vscode extension.
 // In the Webview context we cannot use import * as vscode from "vscode";
 // @ts-expect-error: Cannot find name 'acquireVsCodeApi'.ts(2304)
 const vscode = acquireVsCodeApi();
 
-const FRONTEND_ELEMENT_ID = "frontend";
+let frontendBaseUrl: string;
 
 function relayToFrontend(document: Document, message: MessageType) {
   const iframe: HTMLIFrameElement = document.getElementById(
@@ -22,11 +23,24 @@ function relayToFrontend(document: Document, message: MessageType) {
     return;
   }
   // TODO: Don't hardcode this!
-  contentWindow.postMessage(message, "http://localhost:8000");
+  contentWindow.postMessage(message, frontendBaseUrl);
 }
 
 function relayToExtension(message: MessageType) {
   vscode.postMessage(message);
+}
+
+function initialListener(event: MessageEvent) {
+  const message: MessageType = event.data;
+  if (
+    message.type === MessageTypeNames.ExtensionPing &&
+    event.origin === message.frontendOrigin
+  ) {
+    frontendBaseUrl = event.origin;
+    relayToExtension(message);
+    window.addEventListener("message", messageListener);
+    return;
+  }
 }
 
 function messageListener(event: MessageEvent) {
@@ -35,7 +49,7 @@ function messageListener(event: MessageEvent) {
     relayToFrontend(document, message);
     return;
   }
-  if (event.origin === "http://localhost:8000") {
+  if (event.origin === frontendBaseUrl) {
     relayToExtension(message);
     return;
   }
@@ -43,8 +57,9 @@ function messageListener(event: MessageEvent) {
 
 const SourceAcademy: React.FC = () => {
   useEffect(() => {
-    window.addEventListener("message", messageListener);
+    window.addEventListener("message", initialListener);
     return () => {
+      window.removeEventListener("message", initialListener);
       window.removeEventListener("message", messageListener);
     };
   }, []);
