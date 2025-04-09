@@ -6,7 +6,7 @@ Experimental project for running Source Academy within Visual Studio Code.
 
 1. Use the `Ctrl+Shift+P` shortcut to open the Command Palette. Find the "Show the Source Academy Panel" and run it.
 
-![./instructions.png]
+![](./instructions.png)
 
 2. Log in using the external browser.
 
