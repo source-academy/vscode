@@ -29,7 +29,7 @@ async function build() {
   await buildExtAndWebview();
 
   // Step 2: Download the Source LSP server
-  const version = "0.0.6";
+  const version = "0.1.0";
   const lspFilename = "source-lsp.js";
   const url = `https://github.com/mug1wara26/source-lsp/releases/download/v${version}/${lspFilename}`;
   const outputPath = path.join(outputFolder, lspFilename); // Save in the same directory
