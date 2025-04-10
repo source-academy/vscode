@@ -46,10 +46,12 @@ async function build() {
     await webviewCtx.watch();
     console.log("Watching files...");
   } else {
-    Promise.all([extensionCtx.rebuild(), webviewCtx.rebuild()]).then(() => {
-      console.log("Builds completed successfully.");
-      // process.exit(0);
-    });
+    return Promise.all([extensionCtx.rebuild(), webviewCtx.rebuild()]).then(
+      () => {
+        console.log("Builds completed successfully.");
+        // process.exit(0);
+      },
+    );
   }
 }
 
