@@ -100,7 +100,7 @@
     "package": "Package the extension into .vsix format"
   },
   "scripts": {
-    "build": "node scripts/build.js",
+    "build": "echo $PWD && node scripts/build.js",
     "watch": "node ./esbuild.js --watch",
     "format": "yarn prettier . --write",
     "vscode:prepublish": "yarn run build",
