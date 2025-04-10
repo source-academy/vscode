@@ -16,7 +16,7 @@
   },
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:javascript"
+    "onLanguage:source"
   ],
   "contributes": {
     "commands": [
