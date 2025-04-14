@@ -40,6 +40,7 @@ export class Editor {
     workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
     questionId: number,
+    initialCode: string = "",
   ): Promise<Editor> {
     const self = new Editor(workspaceLocation, assessmentName, questionId);
     self.assessmentName = assessmentName;
@@ -63,7 +64,7 @@ export class Editor {
         self.log(`Opening file failed, creating at ${filePath}`);
         await vscode.workspace.fs.writeFile(
           vscode.Uri.file(filePath),
-          new TextEncoder().encode(""),
+          new TextEncoder().encode(initialCode),
         );
       },
     );

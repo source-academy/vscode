@@ -22,12 +22,12 @@ const Messages = createMessages({
     workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
     questionId: number,
-    code: string,
+    initialCode: string,
   ) => ({
     workspaceLocation,
     assessmentName,
     questionId,
-    code,
+    initialCode,
   }),
   Text: (workspaceLocation: VscWorkspaceLocation, code: string) => ({
     workspaceLocation,

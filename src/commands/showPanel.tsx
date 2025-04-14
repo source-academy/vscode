@@ -43,6 +43,7 @@ async function handleMessage(
           message.workspaceLocation,
           message.assessmentName,
           message.questionId,
+          message.initialCode,
         );
         panel?.reveal(vscode.ViewColumn.Two);
         console.log(
@@ -64,13 +65,13 @@ async function handleMessage(
           sendToFrontend(panel, message);
         });
         break;
-      case MessageTypeNames.Text:
-        if (!activeEditor) {
-          console.log("ERROR: activeEditor is not set");
-          break;
-        }
-        activeEditor.replace(message.code, "Text");
-        break;
+      // case MessageTypeNames.Text:
+      //   if (!activeEditor) {
+      //     console.log("ERROR: activeEditor is not set");
+      //     break;
+      //   }
+      //   activeEditor.replace(message.code, "Text");
+      //   break;
     }
     console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
   }
