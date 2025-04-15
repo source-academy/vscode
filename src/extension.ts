@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
   // };
   const info = context.globalState.get("info") ?? {};
 
-  client.sendNotification("source/publishInfo", info);
+  client.sendRequest("source/publishInfo", info);
 }
 
 // This method is called when your extension is deactivated

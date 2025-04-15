@@ -55,14 +55,14 @@ async function handleMessage(
         if (activeEditor.uri) {
           // TODO: Write our own wrapper to set nested keys easily, removing lodash
           // @ts-ignore
-          _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter);
+          _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter ?? 1);
           // TODO: message.prepend can be undefined in runtime, investigate
           const nPrependLines = message.prepend
             ? message.prepend.split("\n").length
             : 0;
           _.set(info, `["${activeEditor.uri}"].prepend`, nPrependLines);
           context.globalState.update("info", info);
-          client.sendNotification("source/publishInfo", info);
+          client.sendRequest("source/publishInfo", info);
         }
 
         panel?.reveal(vscode.ViewColumn.Two);
