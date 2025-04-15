@@ -3,7 +3,6 @@
 import * as vscode from "vscode";
 import { setupTreeView } from "./view/test";
 import { setupStatusBar } from "./statusbar/status";
-import { evalEditor } from "./commands/evalEditor";
 import { registerAllCommands } from "./commands";
 import { activateLspClient, deactivateLspClient } from "./lsp/client";
 import { LanguageClient } from "vscode-languageclient/node";
