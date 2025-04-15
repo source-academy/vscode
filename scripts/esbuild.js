@@ -1,13 +1,26 @@
+/***/
+/**
+ * Entrypoint to build files required by extension
+ * - extension.js: The main extension file, entrypoint for VSC
+ * - webview.js: Simple web-based script to be in the VSC webview, which embeds Source Academy's frontend as iframe
+ *
+ * To be called by `yarn run build:extension`
+ */
+/***/
+
 // @ts-check: Show errors in this js file
+
 const esbuild = require("esbuild");
 const polyfillNode = require("esbuild-plugin-polyfill-node").polyfillNode;
+
+const outputFolder = require("./utils").getOutputDir();
 
 const extensionConfig = esbuild.context({
   entryPoints: ["./src/extension.ts"],
   bundle: true,
   format: "cjs",
   platform: "node",
-  outfile: "./out/extension.js",
+  outfile: `./${outputFolder}/extension.js`,
   sourcemap: true,
   external: ["vscode"],
 });
@@ -18,7 +31,7 @@ const webviewConfig = esbuild.context({
   format: "esm",
   platform: "browser",
   sourcemap: true,
-  outfile: "./out/webview.js",
+  outfile: `./${outputFolder}/webview.js`,
   plugins: [
     polyfillNode({
       polyfills: {
@@ -38,6 +51,17 @@ const webviewConfig = esbuild.context({
   },
 });
 
+main();
+
+async function main() {
+  if (process.argv.includes("--watch")) {
+    await watch();
+  } else {
+    await build();
+  }
+  process.exit(0);
+}
+
 async function resolveContexts() {
   return await Promise.all([extensionConfig, webviewConfig]);
 }
@@ -47,6 +71,7 @@ async function watch() {
   extensionContext.watch();
   webviewContext.watch();
   console.log("Watching files...");
+  await new Promise(() => {});
 }
 
 async function build() {
@@ -55,12 +80,4 @@ async function build() {
   console.log("Builds completed successfully.");
 }
 
-module.exports = { build };
-
-if (require.main === module) {
-  if (process.argv.includes("--watch")) {
-    watch();
-  } else {
-    build();
-  }
-}
+// module.exports = { build, watch };
