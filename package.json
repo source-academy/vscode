@@ -15,9 +15,6 @@
     "vscode": "^1.93.0"
   },
   "main": "./out/extension.js",
-  "activationEvents": [
-    "onLanguage:source"
-  ],
   "contributes": {
     "commands": [
       {
@@ -36,7 +33,7 @@
     "configuration": {
       "title": "Source Academy",
       "properties": {
-        "source-academy.frontendUrl": {
+        "source-academy.frontendBaseUrl": {
           "type": "string",
           "default": "http://localhost:8000/playground",
           "description": "URL to the Source Academy frontend"

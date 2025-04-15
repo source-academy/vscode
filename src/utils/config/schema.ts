@@ -3,7 +3,7 @@ import { ConfigSchemaUnion } from "./types";
 export default {
   frontendBaseUrl: {
     type: "string",
-    default: "http://localhost:8000",
+    default: "https://frontend.cloud.heyzec.dedyn.io",
   },
   workspaceFolder: { type: "string", default: "" },
 } satisfies Record<string, ConfigSchemaUnion>;
