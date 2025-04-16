@@ -28,6 +28,10 @@
       {
         "command": "source-academy.eval-editor",
         "title": "Source Academy: Run Code in Editor"
+      },
+      {
+        "command": "source-academy.navigate",
+        "title": "Source Academy: Navigate to a different route in Source Academy"
       }
     ],
     "configuration": {

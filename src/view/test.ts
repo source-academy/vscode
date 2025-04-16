@@ -1,18 +1,23 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { VscAssessmentOverview } from "../utils/messages";
 
-export function setupTreeView() {
+export let treeDataProvider: NodeDependenciesProvider;
+
+export function setupTreeView(context: vscode.ExtensionContext) {
   const rootPath =
     vscode.workspace.workspaceFolders &&
     vscode.workspace.workspaceFolders.length > 0
       ? vscode.workspace.workspaceFolders[0].uri.fsPath
       : undefined;
   console.log("Creating tree view");
+  treeDataProvider = new NodeDependenciesProvider(
+    context,
+    "/home/heyzec/Documents/NUS/FYP/sa-vscode",
+  );
   vscode.window.createTreeView("nodeDependencies", {
-    treeDataProvider: new NodeDependenciesProvider(
-      "/home/heyzec/Documents/NUS/FYP/sa-vscode",
-    ),
+    treeDataProvider: treeDataProvider,
   });
 }
 
@@ -39,48 +44,67 @@ const hardcode = [
   ["The Essence of the Source", "Apr 20, 2025, 7:00 PM"],
 ];
 export class NodeDependenciesProvider
-  implements vscode.TreeDataProvider<Dependency | DependencyFolder>
+  implements vscode.TreeDataProvider<BaseTreeItem>
 {
-  constructor(private workspaceRoot: string) {}
+  constructor(
+    private context: vscode.ExtensionContext,
+    private workspaceRoot: string,
+  ) {}
+
+  private _onDidChangeTreeData: vscode.EventEmitter<
+    BaseTreeItem | undefined | null | void
+  > = new vscode.EventEmitter<BaseTreeItem | undefined | null | void>();
+  readonly onDidChangeTreeData: vscode.Event<
+    BaseTreeItem | undefined | null | void
+  > = this._onDidChangeTreeData.event;
 
   // impl
-  getTreeItem(element: Dependency): vscode.TreeItem {
+  getTreeItem(element: BaseTreeItem): vscode.TreeItem {
     return element;
   }
 
   // impl
-  getChildren(
-    element?: Dependency,
-  ): Thenable<(Dependency | DependencyFolder)[]> {
+  getChildren(element?: BaseTreeItem): Thenable<BaseTreeItem[]> {
     if (!element) {
       return Promise.resolve([
-        new DependencyFolder(
-          "Missions",
-          "",
-          vscode.TreeItemCollapsibleState.Expanded,
-        ),
-        new DependencyFolder(
-          "Quests",
-          "",
-          vscode.TreeItemCollapsibleState.Collapsed,
-        ),
-        new DependencyFolder(
-          "Path",
-          "",
-          vscode.TreeItemCollapsibleState.Collapsed,
-        ),
+        new AssessmentFolder("Missions"),
+        new AssessmentFolder("Quests"),
+        new AssessmentFolder("Path"),
       ]);
     }
-    return Promise.resolve(
-      hardcode.map(
-        (entry) =>
-          new Dependency(
-            entry[0],
-            entry[1],
-            vscode.TreeItemCollapsibleState.None,
-          ),
-      ),
-    );
+
+    if (element && element.type === "AssessmentFolder") {
+      // element: typeof AssessmentFolder = element as AssessmentFolder;
+      const elem = element as AssessmentFolder;
+
+      // @ts-ignore
+      const assessmentOverviews: VscAssessmentOverview[] =
+        this.context.globalState.get("assessmentOverviews");
+
+      console.log("=============OA");
+      console.log(assessmentOverviews);
+      return Promise.resolve(
+        assessmentOverviews
+          .filter((oa) => oa.type == elem.assessmentType)
+          .map((oa) => {
+            const label = oa.title;
+            const version = oa.closeAt;
+            const collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+            return new AssessmentOverview(oa);
+          }),
+      );
+    }
+    return Promise.resolve([]);
+    // return Promise.resolve(
+    //   hardcode.map(
+    //     (entry) =>
+    //       new Dependency(
+    //         entry[0],
+    //         entry[1],
+    //         vscode.TreeItemCollapsibleState.None,
+    //       ),
+    //   ),
+    // );
 
     // console.log("Attempt to child")
     // if (!this.workspaceRoot) {
@@ -108,6 +132,10 @@ export class NodeDependenciesProvider
     //     return Promise.resolve([]);
     //   }
     // }
+  }
+
+  refresh() {
+    this._onDidChangeTreeData.fire();
   }
 
   /**
@@ -163,21 +191,38 @@ export class NodeDependenciesProvider
   }
 }
 
-class DependencyFolder extends vscode.TreeItem {
+class BaseTreeItem extends vscode.TreeItem {
+  type?: string;
+
   constructor(
     public readonly label: string,
-    private version: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
   ) {
     super(label, collapsibleState);
-    this.tooltip = `${this.label}-${this.version}`;
-    this.description = this.version;
   }
 
   iconPath = {
     light: path.join(__filename, "..", "..", "assets", "icon.png"),
     dark: path.join(__filename, "..", "..", "assets", "icon.png"),
   };
+}
+
+class AssessmentFolder extends BaseTreeItem {
+  constructor(public readonly assessmentType: string) {
+    super(assessmentType, vscode.TreeItemCollapsibleState.Collapsed);
+    this.type = "AssessmentFolder";
+    // this.tooltip = `${this.label}-${this.version}`;
+    // this.description = this.version;
+  }
+}
+
+class AssessmentOverview extends BaseTreeItem {
+  constructor(assessmentOverview: VscAssessmentOverview) {
+    super(assessmentOverview.title, vscode.TreeItemCollapsibleState.None);
+    this.type = "AssessmentOverview";
+    this.description = assessmentOverview.closeAt;
+    // this.tooltip = `${this.label}-${this.version}`;
+  }
 }
 
 class Dependency extends vscode.TreeItem {
