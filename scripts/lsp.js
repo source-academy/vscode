@@ -22,7 +22,7 @@ async function main() {
 
 async function downloadLsp() {
   const outputFolder = getOutputDir();
-  const version = "0.1.8";
+  const version = "0.1.4";
   const lspFilename = "source-lsp.js";
   const url = `https://github.com/source-academy/source-lsp/releases/download/v${version}/${lspFilename}`;
   // const url = `https://github.com/source-academy/source-lsp/releases/latest/download/${lspFilename}`;
