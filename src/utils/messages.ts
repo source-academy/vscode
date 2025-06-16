@@ -22,7 +22,6 @@ const Messages = createMessages({
     workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
     questionId: number,
-    questionType: string | null,
     chapter: number,
     prepend: string,
     initialCode: string,
@@ -30,7 +29,6 @@ const Messages = createMessages({
     workspaceLocation,
     assessmentName,
     questionId,
-    questionType,
     chapter,
     prepend,
     initialCode,
@@ -41,6 +39,23 @@ const Messages = createMessages({
   }),
   EvalEditor: (workspaceLocation: VscWorkspaceLocation) => ({
     workspaceLocation: workspaceLocation,
+  }),
+  MCQQuestion: (
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+    chapter: number,
+    question: string,
+    options: string[],
+    correctOption: number,
+  ) => ({
+    workspaceLocation,
+    assessmentName,
+    questionId,
+    chapter,
+    question,
+    options,
+    correctOption,
   }),
 });
 
