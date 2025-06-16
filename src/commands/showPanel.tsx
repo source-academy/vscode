@@ -43,6 +43,10 @@ async function handleMessage(
         sendToFrontend(panel, Messages.ExtensionPong(null));
         break;
       case MessageTypeNames.NewEditor:
+        console.log(message.questionType + " questionType \n");
+        if (message.questionType == "mcq") {
+          break;
+        }
         activeEditor = await Editor.create(
           message.workspaceLocation,
           message.assessmentName,
@@ -69,6 +73,12 @@ async function handleMessage(
         console.log(
           `EXTENSION: NewEditor: activeEditor set to ${activeEditor.assessmentName}_${activeEditor.questionId}`,
         );
+        if (activeEditor) {
+          console.log("activeEditor keys and values:");
+          Object.entries(activeEditor).forEach(([key, value]) => {
+            console.log(`${key}:`, value);
+          });
+        }
         activeEditor.onChange((editor) => {
           const workspaceLocation = editor.workspaceLocation;
           const code = editor.getText();
@@ -77,8 +87,14 @@ async function handleMessage(
           }
           if (editor !== activeEditor) {
             console.log(
-              `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
+              `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
             );
+          }
+          if (activeEditor) {
+            console.log("activeEditor keys and values:");
+            Object.entries(activeEditor).forEach(([key, value]) => {
+              console.log(`${key}:`, value);
+            });
           }
           const message = Messages.Text(workspaceLocation, code);
           console.log(`Sending message: ${JSON.stringify(message)}`);
