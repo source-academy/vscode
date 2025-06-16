@@ -57,9 +57,10 @@ async function handleMessage(
           // @ts-ignore
           _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter ?? 1);
           // TODO: message.prepend can be undefined in runtime, investigate
-          const nPrependLines = message.prepend
-            ? message.prepend.split("\n").length
-            : 0;
+          const nPrependLines =
+            message.prepend && message.prepend !== ""
+              ? message.prepend.split("\n").length + 2 // account for start/end markers
+              : 0;
           _.set(info, `["${activeEditor.uri}"].prepend`, nPrependLines);
           context.globalState.update("info", info);
           client.sendRequest("source/publishInfo", info);
