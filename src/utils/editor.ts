@@ -71,7 +71,6 @@ export class Editor {
       "// END PREPEND",
       initialCode,
     ].join("\n");
-    self.log(contents)
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {
@@ -85,6 +84,7 @@ export class Editor {
             .then(async answer => {
               // By default the code displayed is the local one
               if (answer === "Server") {
+                self.log('EXTENSION: Saving program from server to file')
                 await vscode.workspace.fs.writeFile(
                   uri,
                   new TextEncoder().encode(contents),
