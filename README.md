@@ -16,9 +16,14 @@ TODO: Add instructions
    ```
 1. Compile
    ```
-   yarn compile
+   yarn run build
    ```
 1. Run the extension in debug mode by opening the root folder a VSCode window, then "Start Debugging" (or press F5).
+
+### Using the extension
+
+1. Open the Command Palette (Ctrl+Shift+P) and run `Source Academy: Show Source Academy Panel`.
+2. Open User Settings, change Frontend Base URL to \_\_
 
 ### Publishing the extension
 
