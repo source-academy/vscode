@@ -1,16 +1,27 @@
 # Flakes
 .direnv/
 
-# Node dependencies
-node_modules/
+# Yarn Berry
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Intermediate files
+syntaxes/source.tmLanguage.json
 
 # Build artifacts
 out/
 *.vsix
-syntaxes/source.tmLanguage.json
 
 # Logs
 yarn-error.log
 
 # Misc
 .DS_Store
+
+# No longer needed
+node_modules/
