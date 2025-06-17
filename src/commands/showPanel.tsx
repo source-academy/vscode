@@ -14,6 +14,7 @@ import { Editor } from "../utils/editor";
 import { FRONTEND_ELEMENT_ID } from "../constants";
 import { client } from "../extension";
 import _ from "lodash";
+import { treeDataProvider } from "../treeview";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
@@ -93,6 +94,12 @@ async function handleMessage(
       //   }
       //   activeEditor.replace(message.code, "Text");
       //   break;
+      case MessageTypeNames.NotifyAssessmentsOverview:
+        const { assessmentOverviews, courseId } = message;
+        context.globalState.update("assessmentOverviews", assessmentOverviews);
+        context.globalState.update("courseId", courseId);
+        treeDataProvider.refresh();
+        break;
     }
     console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
   }
