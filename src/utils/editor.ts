@@ -71,11 +71,27 @@ export class Editor {
       "// END PREPEND",
       initialCode,
     ].join("\n");
+    self.log(contents)
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {
         if (value.toString() !== contents) {
-          console.log("editor code changed while offline")
+          self.log("EXTENSION: Conflict detected between local and remote, prompting user to choose one")
+          vscode.window
+            .showInformationMessage(
+              "The program on file differs from the one on the Source Academy servers." +
+              "Which program should we use? (Note that picking one will overwrite the other)",
+              "Local", "Server")
+            .then(async answer => {
+              // By default the code displayed is the local one
+              if (answer === "Server") {
+                await vscode.workspace.fs.writeFile(
+                  uri,
+                  new TextEncoder().encode(contents),
+                );
+              }
+            })
+
         }
       },
       async () => {
