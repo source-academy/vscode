@@ -73,7 +73,11 @@ export class Editor {
     ].join("\n");
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
-      () => null,
+      (value) => {
+        if (value.toString() !== contents) {
+          console.log("editor code changed while offline")
+        }
+      },
       async () => {
         self.log(`Opening file failed, creating at ${filePath}`);
         await vscode.workspace.fs.writeFile(
@@ -94,12 +98,12 @@ export class Editor {
     vscode.commands.executeCommand("editor.fold");
 
     self.editor = editor;
-    vscode.workspace.onDidChangeTextDocument(() => {
+    vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (!self.onChangeCallback) {
         return;
       }
       const text = editor.document.getText();
-      if (self.code === text) {
+      if (e.contentChanges.length === 0) {
         self.log(`EXTENSION: Editor's code did not change, ignoring`);
         return;
       }
@@ -109,7 +113,7 @@ export class Editor {
         );
         return;
       }
-      self.log(`EXTENSION: Editor's code changed! ${text}`);
+      self.log(`EXTENSION: Editor's code changed!`);
       self.onChangeCallback(self);
       self.code = text;
     });
