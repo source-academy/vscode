@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { VscAssessmentOverview } from "../utils/messages";
+import { SOURCE_ACADEMY_ICON_URI } from "../extension";
 
 export let treeDataProvider: AssessmentsSidebarProvider;
 
@@ -78,10 +79,9 @@ class BaseTreeItem extends vscode.TreeItem {
     super(label, collapsibleState);
   }
 
-  // TODO: Determine if we can use existing png instead
   iconPath = {
-    light: path.join(__filename, "..", "..", "assets", "icon.png"),
-    dark: path.join(__filename, "..", "..", "assets", "icon.png"),
+    light: SOURCE_ACADEMY_ICON_URI,
+    dark: SOURCE_ACADEMY_ICON_URI,
   };
 }
 

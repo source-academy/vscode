@@ -12,7 +12,7 @@ import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
 import { Editor } from "../utils/editor";
 import { FRONTEND_ELEMENT_ID } from "../constants";
-import { client } from "../extension";
+import { client, SOURCE_ACADEMY_ICON_URI } from "../extension";
 import _ from "lodash";
 import { treeDataProvider } from "../treeview";
 
@@ -165,11 +165,7 @@ export async function showPanel(
     </div>,
   );
 
-  panel.iconPath = vscode.Uri.joinPath(
-    context.extensionUri,
-    "assets",
-    "icon.png",
-  );
+  panel.iconPath = SOURCE_ACADEMY_ICON_URI;
 }
 
 // TODO: Move this to a util file

@@ -10,6 +10,8 @@ import { LanguageClient } from "vscode-languageclient/node";
 // TODO: Don't expose this object directly, create an interface via a wrapper class
 export let client: LanguageClient;
 
+export let SOURCE_ACADEMY_ICON_URI: vscode.Uri;
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -26,6 +28,12 @@ export function activate(context: vscode.ExtensionContext) {
   const info = context.globalState.get("info") ?? {};
 
   client.sendRequest("source/publishInfo", info);
+
+  SOURCE_ACADEMY_ICON_URI = vscode.Uri.joinPath(
+    context.extensionUri,
+    "assets",
+    "icon.svg",
+  );
 }
 
 // This method is called when your extension is deactivated

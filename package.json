@@ -47,8 +47,8 @@
           ".sjs"
         ],
         "icon": {
-          "light": "assets/icon.png",
-          "dark": "assets/icon.png"
+          "light": "assets/icon.svg",
+          "dark": "assets/icon.svg"
         },
         "configuration": "./language-configuration.json"
       }
@@ -81,7 +81,7 @@
         {
           "id": "source-academy",
           "title": "Source Academy",
-          "icon": "assets/sa.svg"
+          "icon": "assets/icon.svg"
         }
       ]
     }
