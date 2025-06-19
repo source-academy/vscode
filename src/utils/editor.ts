@@ -65,12 +65,15 @@ export class Editor {
     const uri = vscode.Uri.file(filePath);
     self.uri = uri.toString();
 
-    const contents = [
-      "// PREPEND -- DO NOT EDIT",
-      prepend,
-      "// END PREPEND",
-      initialCode,
-    ].join("\n");
+    const contents =
+      prepend !== ""
+        ? [
+            "// PREPEND -- DO NOT EDIT",
+            prepend,
+            "// END PREPEND",
+            initialCode,
+          ].join("\n")
+        : initialCode;
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {
