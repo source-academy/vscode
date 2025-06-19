@@ -84,7 +84,13 @@
           "icon": "assets/icon.svg"
         }
       ]
-    }
+    },
+    "viewsWelcome": [
+      {
+        "view": "assessments",
+        "contents": "Launch the Source Academy panel to begin coding.\n[Launch!](command:source-academy.show-panel)\nNavigate to Missions page to populate this panel."
+      }
+    ]
   },
   "scripts-info": {
     "build": "Builds all files required for the extension",
