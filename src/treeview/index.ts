@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import { VscAssessmentOverview } from "../utils/messages";
 import { SOURCE_ACADEMY_ICON_URI } from "../extension";
 
@@ -12,7 +11,7 @@ export function setupTreeView(context: vscode.ExtensionContext) {
   courseId = context.globalState.get("courseId") as number;
 
   treeDataProvider = new AssessmentsSidebarProvider(context);
-  vscode.window.createTreeView("nodeDependencies", {
+  vscode.window.createTreeView("assessments", {
     treeDataProvider: treeDataProvider,
   });
 }
@@ -43,7 +42,7 @@ export class AssessmentsSidebarProvider
 
     if (!element) {
       const assessmentTypes = [
-        ...new Set(assessmentOverviews.map((oa) => oa.type)),
+        ...new Set(assessmentOverviews.map((ao) => ao.type)),
       ];
       return Promise.resolve(
         assessmentTypes.map((at) => new AssessmentFolder(at)),
@@ -55,9 +54,9 @@ export class AssessmentsSidebarProvider
 
       return Promise.resolve(
         assessmentOverviews
-          .filter((oa) => oa.type == elem.assessmentType)
-          .map((oa) => {
-            return new AssessmentOverview(oa);
+          .filter((ao) => ao.type == elem.assessmentType)
+          .map((ao) => {
+            return new AssessmentOverview(ao);
           }),
       );
     }

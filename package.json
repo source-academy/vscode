@@ -69,10 +69,10 @@
     "views": {
       "source-academy": [
         {
-          "id": "nodeDependencies",
+          "id": "assessments",
           "name": "Assessments",
-          "icon": "media/dep.svg",
-          "contextualTitle": "Package Explorer"
+          "icon": "assets/icon.svg",
+          "contextualTitle": "Source Academy"
         }
       ]
     },
