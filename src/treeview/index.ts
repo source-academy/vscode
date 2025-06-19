@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { VscAssessmentOverview } from "../utils/messages";
 import { SOURCE_ACADEMY_ICON_URI } from "../extension";
+import { getValue, mirror } from "../utils/store/test";
 
 export let treeDataProvider: AssessmentsSidebarProvider;
 
@@ -8,7 +9,8 @@ export let treeDataProvider: AssessmentsSidebarProvider;
 let courseId: number;
 
 export function setupTreeView(context: vscode.ExtensionContext) {
-  courseId = context.globalState.get("courseId") as number;
+  // courseId = context.globalState.get("courseId") as number;
+  courseId = getValue(mirror.courseId);
 
   treeDataProvider = new AssessmentsSidebarProvider(context);
   vscode.window.createTreeView("assessments", {
@@ -33,9 +35,11 @@ export class AssessmentsSidebarProvider
   }
 
   getChildren(element?: BaseTreeItem): Thenable<BaseTreeItem[]> {
-    // @ts-ignore
-    const assessmentOverviews: VscAssessmentOverview[] =
-      this.context.globalState.get("assessmentOverviews");
+    // // @ts-ignore
+    // const assessmentOverviews: VscAssessmentOverview[] =
+    //   this.context.globalState.get("assessmentOverviews");
+    const assessmentOverviews = getValue(mirror.assessmentOverviews);
+
     if (!assessmentOverviews) {
       return Promise.resolve([]);
     }

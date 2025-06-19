@@ -15,6 +15,7 @@ import { FRONTEND_ELEMENT_ID } from "../constants";
 import { client, SOURCE_ACADEMY_ICON_URI } from "../extension";
 import _ from "lodash";
 import { treeDataProvider } from "../treeview";
+import { getValue, mirror, setValue } from "../utils/store/test";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
@@ -52,18 +53,23 @@ async function handleMessage(
           message.initialCode,
         );
         activeEditor.uri;
-        const info = context.globalState.get("info") ?? {};
+        // const info = context.globalState.get("info") ?? {};
+        const info = getValue(mirror.info);
         if (activeEditor.uri) {
           // TODO: Write our own wrapper to set nested keys easily, removing lodash
           // @ts-ignore
-          _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter ?? 1);
+          // _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter ?? 1);
+          info[activeEditor.uri].chapter = message.chapter ?? 1;
+
           // TODO: message.prepend can be undefined in runtime, investigate
           const nPrependLines =
             message.prepend && message.prepend !== ""
               ? message.prepend.split("\n").length + 2 // account for start/end markers
               : 0;
-          _.set(info, `["${activeEditor.uri}"].prepend`, nPrependLines);
-          context.globalState.update("info", info);
+          // _.set(info, `["${activeEditor.uri}"].prepend`, nPrependLines);
+          info[activeEditor.uri].prepend = nPrependLines;
+          // context.globalState.update("info", info);
+          setValue(mirror.info, info);
           client.sendRequest("source/publishInfo", info);
         }
 
@@ -96,8 +102,10 @@ async function handleMessage(
       //   break;
       case MessageTypeNames.NotifyAssessmentsOverview:
         const { assessmentOverviews, courseId } = message;
-        context.globalState.update("assessmentOverviews", assessmentOverviews);
-        context.globalState.update("courseId", courseId);
+        // context.globalState.update("assessmentOverviews", assessmentOverviews);
+        setValue(mirror.assessmentOverviews, assessmentOverviews);
+        // context.globalState.update("courseId", courseId);
+        setValue(mirror.courseId, courseId);
         treeDataProvider.refresh();
         break;
     }
