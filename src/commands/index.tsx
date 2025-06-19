@@ -12,7 +12,8 @@ const EXTENSION_ID = "source-academy";
  */
 const commands = (context: vscode.ExtensionContext) => ({
   pick: () => runLanguagePicker(context),
-  "show-panel": () => showPanel(context),
+  "show-panel": (route?: string, altUrl?: string) =>
+    showPanel(context, route, altUrl),
   "eval-editor": () => evalEditor(context),
   navigate: (route: string) => navigate(context, route),
 });

@@ -107,7 +107,15 @@ async function handleMessage(
   handling = false;
 }
 
-export async function showPanel(context: vscode.ExtensionContext) {
+export async function showPanel(
+  context: vscode.ExtensionContext,
+  /*
+    route is relative to frontendUrl, while altUrl allows specifiying any arbitrary URL.
+    TODO: across this repo, move any references to backendUrl to the frontend repo, then remove altUrl param
+  */
+  route?: string,
+  altUrl?: string,
+) {
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {
     language = LANGUAGES.SOURCE_1;
@@ -132,7 +140,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
     context.subscriptions,
   );
 
-  const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
+  const iframeUrl =
+    altUrl ?? new URL(route ?? "/playground", config.frontendBaseUrl).href;
 
   // equivalent to panel.webview.html = ...
   setWebviewContent(
@@ -146,7 +155,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
     >
       <iframe
         id={FRONTEND_ELEMENT_ID}
-        src={frontendUrl}
+        src={iframeUrl}
         width="100%"
         height="100%"
         // @ts-ignore
@@ -165,9 +174,11 @@ export async function showPanel(context: vscode.ExtensionContext) {
 
 // TODO: Move this to a util file
 export async function sendToFrontendWrapped(message: MessageType) {
+  // TODO: This returning of status code shouldn't be necessary after refactor
   if (!panel) {
     console.error("ERROR: panel is not set");
-    return;
+    return false;
   }
   sendToFrontend(panel, message);
+  return true;
 }
