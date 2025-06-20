@@ -35,7 +35,7 @@
       "properties": {
         "source-academy.frontendBaseUrl": {
           "type": "string",
-          "default": "https://frontend.cloud.heyzec.dedyn.io",
+          "default": "http://localhost:8000",
           "description": "URL to the Source Academy frontend"
         }
       }

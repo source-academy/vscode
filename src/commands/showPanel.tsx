@@ -85,6 +85,15 @@ async function handleMessage(
           sendToFrontend(panel, message);
         });
         break;
+      case MessageTypeNames.ChangeChapter: {
+        const info = context.globalState.get("info") ?? {};
+        const uri = vscode.Uri.file(Editor.getFilePath(message.assessmentName, message.questionId)).toString();
+
+        _.set(info, `["${uri}"].chapter`, message.chapter ?? 1);
+        context.globalState.update("info", info);
+        client.sendRequest("source/publishInfo", info);
+        break;
+      }
       // case MessageTypeNames.Text:
       //   if (!activeEditor) {
       //     console.log("ERROR: activeEditor is not set");

@@ -37,18 +37,7 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
-  // TODO: This method is too loaded, it's not obvious it also shows the editor
-  static async create(
-    workspaceLocation: VscWorkspaceLocation,
-    assessmentName: string,
-    questionId: number,
-    prepend: string = "",
-    initialCode: string = "",
-  ): Promise<Editor> {
-    const self = new Editor(workspaceLocation, assessmentName, questionId);
-    self.assessmentName = assessmentName;
-    self.questionId = questionId;
-
+  static getFilePath(assessmentName: string, questionId: number): string {
     let workspaceFolder = config.workspaceFolder;
     if (!workspaceFolder) {
       workspaceFolder = path.join(os.homedir(), ".sourceacademy");
@@ -62,6 +51,22 @@ export class Editor {
       `${assessmentName}_${questionId}.js`,
     );
 
+    return filePath
+  }
+
+  // TODO: This method is too loaded, it's not obvious it also shows the editor
+  static async create(
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+    prepend: string = "",
+    initialCode: string = "",
+  ): Promise<Editor> {
+    const self = new Editor(workspaceLocation, assessmentName, questionId);
+    self.assessmentName = assessmentName;
+    self.questionId = questionId;
+
+    const filePath = this.getFilePath(assessmentName, questionId);
     const uri = vscode.Uri.file(filePath);
     self.uri = uri.toString();
 
