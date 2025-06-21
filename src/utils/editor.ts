@@ -82,13 +82,13 @@ export class Editor {
           vscode.window
             .showInformationMessage(
               [
-                "The program on file differs from the one on the Source Academy servers.",
-                "Which program should we use? (Note that picking one will overwrite the other)",
-              ].join(' '),
-              "Local", "Server")
+                "The local file differs from the version on the Source Academy servers.",
+                "Discard the local file and use the one on the server?",
+              ].join(' '), {modal: true},
+              "Yes")
             .then(async answer => {
               // By default the code displayed is the local one
-              if (answer === "Server") {
+              if (answer === "Yes") {
                 self.log('EXTENSION: Saving program from server to file')
                 await vscode.workspace.fs.writeFile(
                   uri,
