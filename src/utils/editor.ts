@@ -81,8 +81,10 @@ export class Editor {
           self.log("EXTENSION: Conflict detected between local and remote, prompting user to choose one")
           vscode.window
             .showInformationMessage(
-              "The program on file differs from the one on the Source Academy servers." +
-              "Which program should we use? (Note that picking one will overwrite the other)",
+              [
+                "The program on file differs from the one on the Source Academy servers.",
+                "Which program should we use? (Note that picking one will overwrite the other)",
+              ].join(' '),
               "Local", "Server")
             .then(async answer => {
               // By default the code displayed is the local one
