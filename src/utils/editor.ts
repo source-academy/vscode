@@ -76,7 +76,29 @@ export class Editor {
         : initialCode;
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
-      () => null,
+      (value) => {
+        if (value.toString() !== contents) {
+          self.log("EXTENSION: Conflict detected between local and remote, prompting user to choose one")
+          vscode.window
+            .showInformationMessage(
+              [
+                "The local file differs from the version on the Source Academy servers.",
+                "Discard the local file and use the one on the server?",
+              ].join(' '), {modal: true},
+              "Yes")
+            .then(async answer => {
+              // By default the code displayed is the local one
+              if (answer === "Yes") {
+                self.log('EXTENSION: Saving program from server to file')
+                await vscode.workspace.fs.writeFile(
+                  uri,
+                  new TextEncoder().encode(contents),
+                );
+              }
+            })
+
+        }
+      },
       async () => {
         self.log(`Opening file failed, creating at ${filePath}`);
         await vscode.workspace.fs.writeFile(
@@ -97,12 +119,12 @@ export class Editor {
     vscode.commands.executeCommand("editor.fold");
 
     self.editor = editor;
-    vscode.workspace.onDidChangeTextDocument(() => {
+    vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (!self.onChangeCallback) {
         return;
       }
       const text = editor.document.getText();
-      if (self.code === text) {
+      if (e.contentChanges.length === 0) {
         self.log(`EXTENSION: Editor's code did not change, ignoring`);
         return;
       }
@@ -112,7 +134,7 @@ export class Editor {
         );
         return;
       }
-      self.log(`EXTENSION: Editor's code changed! ${text}`);
+      self.log(`EXTENSION: Editor's code changed!`);
       self.onChangeCallback(self);
       self.code = text;
     });
