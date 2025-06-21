@@ -4,6 +4,7 @@ import * as os from "os";
 import config from "../utils/config";
 import { VscWorkspaceLocation } from "./messages";
 import path from "path";
+import { canonicaliseLocation } from "./misc";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -49,13 +50,8 @@ export class Editor {
     self.assessmentName = assessmentName;
     self.questionId = questionId;
 
-    let workspaceFolder = config.workspaceFolder;
-    if (!workspaceFolder) {
-      workspaceFolder = path.join(os.homedir(), ".sourceacademy");
-      // TODO: Prompt the user to make this folder the default, and then set back to the config store.
-    } else if (!path.isAbsolute(workspaceFolder)) {
-      workspaceFolder = path.join(os.homedir(), workspaceFolder);
-    }
+    // TODO: Prompt the user to make this folder the default, and then set back to the config store.
+    const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
 
     const filePath = path.join(
       workspaceFolder,
