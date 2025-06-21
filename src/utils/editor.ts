@@ -86,6 +86,7 @@ export class Editor {
       preview: false,
       viewColumn: vscode.ViewColumn.One,
     });
+    vscode.languages.setTextDocumentLanguage(editor.document, "source");
     editor.selection = new vscode.Selection(
       editor.document.positionAt(0),
       editor.document.positionAt(1),
