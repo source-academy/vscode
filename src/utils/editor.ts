@@ -50,7 +50,6 @@ export class Editor {
     self.assessmentName = assessmentName;
     self.questionId = questionId;
 
-    // TODO: Prompt the user to make this folder the default, and then set back to the config store.
     const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
 
     const filePath = path.join(

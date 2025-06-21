@@ -6,6 +6,8 @@ import { setupStatusBar } from "./statusbar/status";
 import { registerAllCommands } from "./commands";
 import { activateLspClient, deactivateLspClient } from "./lsp/client";
 import { LanguageClient } from "vscode-languageclient/node";
+import { canonicaliseLocation } from "./utils/misc";
+import config from "./utils/config";
 
 // TODO: Don't expose this object directly, create an interface via a wrapper class
 export let client: LanguageClient;
@@ -34,6 +36,21 @@ export function activate(context: vscode.ExtensionContext) {
     "assets",
     "icon.svg",
   );
+
+  // TODO: Prompt the user to make this folder the default, and then set back to the config store.
+
+  // Update user's workspace settings to associate .js to Source
+  const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
+  if (
+    vscode.workspace.workspaceFolders
+      ?.map((wf) => wf.uri.fsPath)
+      .includes(workspaceFolder)
+  ) {
+    const workspaceConfig = vscode.workspace.getConfiguration();
+    workspaceConfig.update("files.associations", {
+      "*.js": "source",
+    });
+  }
 }
 
 // This method is called when your extension is deactivated
