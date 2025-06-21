@@ -92,6 +92,13 @@ async function handleMessage(
         _.set(info, `["${uri}"].chapter`, message.chapter ?? 1);
         context.globalState.update("info", info);
         client.sendRequest("source/publishInfo", info);
+
+        if (message.variant !== "default") {
+          vscode.window.showInformationMessage(`The Language Server does not support any variants, the 
+            Language Server will use Source §${message.chapter}, but it is not guaranteed to be accurate.`)
+        }
+
+
         break;
       }
       // case MessageTypeNames.Text:
