@@ -37,18 +37,7 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
-  // TODO: This method is too loaded, it's not obvious it also shows the editor
-  static async create(
-    workspaceLocation: VscWorkspaceLocation,
-    assessmentName: string,
-    questionId: number,
-    prepend: string = "",
-    initialCode: string = "",
-  ): Promise<Editor> {
-    const self = new Editor(workspaceLocation, assessmentName, questionId);
-    self.assessmentName = assessmentName;
-    self.questionId = questionId;
-
+  static getFilePath(assessmentName: string, questionId: number): string {
     let workspaceFolder = config.workspaceFolder;
     if (!workspaceFolder) {
       workspaceFolder = path.join(os.homedir(), ".sourceacademy");
@@ -62,6 +51,22 @@ export class Editor {
       `${assessmentName}_${questionId}.js`,
     );
 
+    return filePath
+  }
+
+  // TODO: This method is too loaded, it's not obvious it also shows the editor
+  static async create(
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+    prepend: string = "",
+    initialCode: string = "",
+  ): Promise<Editor> {
+    const self = new Editor(workspaceLocation, assessmentName, questionId);
+    self.assessmentName = assessmentName;
+    self.questionId = questionId;
+
+    const filePath = this.getFilePath(assessmentName, questionId);
     const uri = vscode.Uri.file(filePath);
     self.uri = uri.toString();
 
@@ -76,7 +81,27 @@ export class Editor {
         : initialCode;
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
-      () => null,
+      (value) => {
+        if (value.toString() !== contents) {
+          self.log("EXTENSION: Conflict detected between local and remote, prompting user to choose one")
+          vscode.window
+            .showInformationMessage(
+              "The program on file differs from the one on the Source Academy servers." +
+              "Which program should we use? (Note that picking one will overwrite the other)",
+              "Local", "Server")
+            .then(async answer => {
+              // By default the code displayed is the local one
+              if (answer === "Server") {
+                self.log('EXTENSION: Saving program from server to file')
+                await vscode.workspace.fs.writeFile(
+                  uri,
+                  new TextEncoder().encode(contents),
+                );
+              }
+            })
+
+        }
+      },
       async () => {
         self.log(`Opening file failed, creating at ${filePath}`);
         await vscode.workspace.fs.writeFile(
@@ -97,12 +122,12 @@ export class Editor {
     vscode.commands.executeCommand("editor.fold");
 
     self.editor = editor;
-    vscode.workspace.onDidChangeTextDocument(() => {
+    vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (!self.onChangeCallback) {
         return;
       }
       const text = editor.document.getText();
-      if (self.code === text) {
+      if (e.contentChanges.length === 0) {
         self.log(`EXTENSION: Editor's code did not change, ignoring`);
         return;
       }
@@ -112,7 +137,7 @@ export class Editor {
         );
         return;
       }
-      self.log(`EXTENSION: Editor's code changed! ${text}`);
+      self.log(`EXTENSION: Editor's code changed!`);
       self.onChangeCallback(self);
       self.code = text;
     });
