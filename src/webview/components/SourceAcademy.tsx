@@ -15,15 +15,10 @@ const vscode = acquireVsCodeApi();
 let frontendBaseUrl: string;
 
 function relayToFrontend(document: Document, message: MessageType) {
-  const iframe: HTMLIFrameElement = document.getElementById(
+  const iframe = document.getElementById(
     FRONTEND_ELEMENT_ID,
-  ) as HTMLIFrameElement;
-  const contentWindow = iframe.contentWindow;
-  if (!contentWindow) {
-    return;
-  }
-  // TODO: Don't hardcode this!
-  contentWindow.postMessage(message, frontendBaseUrl);
+  ) as HTMLIFrameElement | null;
+  iframe?.contentWindow?.postMessage(message, frontendBaseUrl);
 }
 
 function relayToExtension(message: MessageType) {
@@ -82,7 +77,7 @@ const SourceAcademy: React.FC = () => {
       ) {
         return;
       }
-      console.log("[Webview] MCQ choice selected", {
+      console.log("[MCQPanel] choice selected", {
         workspaceLocation,
         assessmentName,
         questionId,
@@ -90,7 +85,10 @@ const SourceAcademy: React.FC = () => {
       });
       // Persist answer for future sessions
       try {
-        localStorage.setItem(`mcq_${assessmentName}_${questionId}`, String(choice));
+        localStorage.setItem(
+          `mcq_${assessmentName}_${questionId}`,
+          String(choice),
+        );
       } catch (e) {
         console.warn("[Webview] Failed to save MCQ answer to localStorage", e);
       }
@@ -101,27 +99,28 @@ const SourceAcademy: React.FC = () => {
         questionId,
         choice,
       );
-      // Relay directly to the embedded frontend iframe
-      relayToFrontend(document, message);
+      vscode.postMessage(message);
     };
 
     document.addEventListener("change", handleChoiceChange);
 
-// Upon mount, restore any saved answers and pre-select radios
-const restore = () => {
-  document.querySelectorAll<HTMLInputElement>('input[name="mcq-choice"]').forEach((el) => {
-    const qid = el.dataset.qid;
-    const assess = el.dataset.assessment;
-    if (!qid || !assess) return;
-    const stored = localStorage.getItem(`mcq_${assess}_${qid}`);
-    if (stored !== null && stored === el.dataset.choice) {
-      el.checked = true;
-    }
-  });
-};
-restore();
+    // Upon mount, restore any saved answers and pre-select radios
+    const restore = () => {
+      document
+        .querySelectorAll<HTMLInputElement>('input[name="mcq-choice"]')
+        .forEach((el) => {
+          const qid = el.dataset.qid;
+          const assess = el.dataset.assessment;
+          if (!qid || !assess) return;
+          const stored = localStorage.getItem(`mcq_${assess}_${qid}`);
+          if (stored !== null && stored === el.dataset.choice) {
+            el.checked = true;
+          }
+        });
+    };
+    restore();
 
-return () => document.removeEventListener("change", handleChoiceChange);
+    return () => document.removeEventListener("change", handleChoiceChange);
   }, []);
 
   return <></>;

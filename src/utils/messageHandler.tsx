@@ -51,6 +51,12 @@ export class MessageHandler {
               { enableScripts: true, retainContextWhenHidden: true },
             );
 
+            // Forward messages from the MCQ panel to the main panel
+            this.mcqPanel.webview.onDidReceiveMessage((msg: MessageType) => {
+              console.log("EXTENSION: Relay message from mcqPanel", msg);
+              sendToFrontend(this.panel, msg);
+            });
+
             this.mcqPanel.onDidDispose(() => {
               this.mcqPanel = null;
             });
