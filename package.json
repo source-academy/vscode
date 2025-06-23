@@ -85,7 +85,7 @@
     "download-lsp": "node scripts/lsp.js",
     "format": "yarn prettier . --write",
     "vscode:prepublish": "yarn run download-lsp && yarn run build",
-    "package": "vsce package",
+    "package": "vsce package --no-dependencies",
     "test:syntax": "yarn run build:syntax && vscode-tmgrammar-test ./tests/syntaxes/*",
     "test": "yarn test:syntax"
   },
