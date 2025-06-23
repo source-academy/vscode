@@ -86,6 +86,25 @@ export class MessageHandler {
           break;
         }
 
+        case MessageTypeNames.MCQAnswer: {
+          const workspaceLocation = message.workspaceLocation;
+          const assessmentName = message.assessmentName;
+          const questionId = message.questionId;
+          const choiceIndex = message.choice;
+
+          console.log(
+            `MCQ Answer: ${assessmentName}, Question ID: ${questionId}, Choice Index: ${choiceIndex}`,
+          );
+          const msg = Messages.MCQAnswer(
+            workspaceLocation,
+            assessmentName,
+            questionId,
+            choiceIndex,
+          );
+          sendToFrontend(this.panel, msg);
+          break;
+        }
+
         case MessageTypeNames.NewEditor:
           this.activeEditor = await Editor.create(
             message.workspaceLocation,

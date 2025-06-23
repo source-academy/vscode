@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Messages, { sendToWebview } from "../../utils/messages";
+import Messages from "../../utils/messages";
 import { sendToFrontendWrapped } from "../../commands/showPanel";
 
 export interface McqData {
@@ -20,7 +20,6 @@ const McqPanel: React.FC<McqPanelProps> = ({ data, onAnswer }) => {
 
   return (
     <div style={{ padding: "1rem" }}>
-      <h3>{data.question}</h3>
       <ul style={{ listStyle: "none", paddingLeft: 0 }}>
         {data.choices.map((c, idx) => (
           <li key={idx} style={{ marginBottom: "0.5rem" }}>
@@ -29,10 +28,14 @@ const McqPanel: React.FC<McqPanelProps> = ({ data, onAnswer }) => {
                 type="radio"
                 name="mcq-choice"
                 value={idx}
+                data-choice={idx}
+                data-ws={data.workspaceLocation ?? "assessment"}
+                data-assessment={data.assessmentName}
+                data-qid={data.questionId}
                 checked={selected === idx}
                 onChange={() => {
                   setSelected(idx);
-                  const wsLoc = data.workspaceLocation ?? "assessment";
+                  onAnswer(idx);
                 }}
                 style={{ marginRight: "0.5rem" }}
               />
@@ -51,7 +54,18 @@ export const McqPanelWithLogging: React.FC<{ data: McqData }> = ({ data }) => (
   <McqPanel
     data={data}
     onAnswer={(choiceIndex) => {
-      console.log("Selected choice index:", choiceIndex);
+      const wsLoc = data.workspaceLocation ?? "assessment";
+      console.log(
+        `MCQ Answer: ${data.assessmentName}, Question ID: ${data.questionId}, Choice Index: ${choiceIndex}`,
+      );
+      sendToFrontendWrapped(
+        Messages.MCQAnswer(
+          wsLoc,
+          data.assessmentName,
+          data.questionId,
+          choiceIndex,
+        ),
+      );
     }}
   />
 );

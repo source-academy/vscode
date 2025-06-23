@@ -4,7 +4,7 @@
  */
 //
 import React, { useEffect } from "react";
-import { MessageType, MessageTypeNames } from "../../utils/messages";
+import Messages, { MessageType, MessageTypeNames } from "../../utils/messages";
 import { FRONTEND_ELEMENT_ID } from "../../constants";
 
 // This function is provided by vscode extension.
@@ -62,6 +62,43 @@ const SourceAcademy: React.FC = () => {
       window.removeEventListener("message", initialListener);
       window.removeEventListener("message", messageListener);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleChoiceChange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (!target || target.name !== "mcq-choice") {
+        return;
+      }
+      const choice = parseInt(target.dataset.choice ?? "-1", 10);
+      const workspaceLocation = target.dataset.ws as any;
+      const assessmentName = target.dataset.assessment ?? "";
+      const questionId = parseInt(target.dataset.qid ?? "-1", 10);
+      if (
+        isNaN(choice) ||
+        isNaN(questionId) ||
+        !workspaceLocation ||
+        assessmentName === ""
+      ) {
+        return;
+      }
+      console.log("[Webview] MCQ choice selected", {
+        workspaceLocation,
+        assessmentName,
+        questionId,
+        choice,
+      });
+      const message = Messages.MCQAnswer(
+        workspaceLocation as any,
+        assessmentName,
+        questionId,
+        choice,
+      );
+      relayToExtension(message);
+    };
+
+    document.addEventListener("change", handleChoiceChange);
+    return () => document.removeEventListener("change", handleChoiceChange);
   }, []);
 
   return <></>;
