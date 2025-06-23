@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import Messages from "../../utils/messages";
+import Messages, { sendToWebview } from "../../utils/messages";
 
 export interface McqData {
   assessmentName: string;
   questionId: number;
   question: string;
   choices: string[];
+  workspaceLocation?: "assessment" | "playground";
 }
 
 interface McqPanelProps {
@@ -28,7 +29,10 @@ const McqPanel: React.FC<McqPanelProps> = ({ data, onAnswer }) => {
                 name="mcq-choice"
                 value={idx}
                 checked={selected === idx}
-                onChange={() => setSelected(idx)}
+                onChange={() => {
+                  setSelected(idx);
+                  onAnswer(idx);
+                }}
                 style={{ marginRight: "0.5rem" }}
               />
               {c}
@@ -36,18 +40,17 @@ const McqPanel: React.FC<McqPanelProps> = ({ data, onAnswer }) => {
           </li>
         ))}
       </ul>
-      <button
-        disabled={selected === null}
-        onClick={() => {
-          if (selected !== null) {
-            onAnswer(selected);
-          }
-        }}
-      >
-        Submit
-      </button>
     </div>
   );
 };
 
 export default McqPanel;
+
+export const McqPanelWithLogging: React.FC<{ data: McqData }> = ({ data }) => (
+  <McqPanel
+    data={data}
+    onAnswer={(choiceIndex) => {
+      console.log("Selected choice index:", choiceIndex);
+    }}
+  />
+);

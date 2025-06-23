@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 // Allow using JSX within this file by overriding our own createElement function
 import React from "../utils/FakeReact";
+import ReactDOMServer from "react-dom/server";
 
 import Messages, {
   MessageType,
@@ -14,6 +15,7 @@ import { Editor } from "../utils/editor";
 import { FRONTEND_ELEMENT_ID } from "../constants";
 import { client } from "../extension";
 import _ from "lodash";
+import { McqPanelWithLogging as McqPanel } from "../webview/components/McqPanel";
 
 let mcqPanel: vscode.WebviewPanel | null = null;
 
@@ -44,37 +46,49 @@ async function handleMessage(
       case MessageTypeNames.ExtensionPing:
         sendToFrontend(panel, Messages.ExtensionPong(null));
         break;
-      case MessageTypeNames.MCQQuestion:
-        {
-          if (mcqPanel === null) {
-            mcqPanel = vscode.window.createWebviewPanel(
-              "mcq-question-panel",
-              `Question ${message.questionId + 1}`,
-              vscode.ViewColumn.One,
-              { enableScripts: true, retainContextWhenHidden: true },
-            );
-            mcqPanel.onDidDispose(() => {
-              mcqPanel = null;
-            });
-          }
-          mcqPanel.title = `Question ${message.questionId + 1}`;
-          mcqPanel.iconPath = vscode.Uri.joinPath(
-            context.extensionUri,
-            "assets",
-            "icon.png",
+      case MessageTypeNames.MCQQuestion: {
+        if (mcqPanel === null) {
+          mcqPanel = vscode.window.createWebviewPanel(
+            "mcq-question-panel",
+            `Question ${message.questionId + 1}`,
+            vscode.ViewColumn.One,
+            { enableScripts: true, retainContextWhenHidden: true },
           );
 
-          // Cast message to ensure properties exist
-          const mcqMsg = message as any;
-          mcqPanel.webview.html = getMcqHtml(
-            mcqPanel.webview,
-            mcqMsg.question,
-            mcqMsg.options,
-            mcqMsg.questionId,
-          );
-          mcqPanel.reveal(vscode.ViewColumn.One);
+          mcqPanel.onDidDispose(() => {
+            mcqPanel = null;
+          });
         }
+        mcqPanel.title = `Question ${message.questionId + 1}`;
+        mcqPanel.iconPath = vscode.Uri.joinPath(
+          context.extensionUri,
+          "assets",
+          "icon.png",
+        );
+        let activePanel = await McqPanel({
+          data: {
+            assessmentName: message.assessmentName ?? "",
+            questionId: message.questionId,
+            question: message.question,
+            choices: message.options,
+            workspaceLocation: message.workspaceLocation ?? "assessment",
+          },
+        });
+        setWebviewContent(
+          mcqPanel,
+          context,
+          <div
+            // @ts-ignore: Our FakeReact doesn't modify the style attribute
+            style="width: 100%; height: calc(100vh - 10px)"
+            id="mcq-panel"
+          >
+            {ReactDOMServer.renderToString(activePanel)}
+          </div>,
+        );
+        mcqPanel.reveal(vscode.ViewColumn.One);
+
         break;
+      }
 
       case MessageTypeNames.NewEditor:
         // console.log(message.questionType + " questionType \n");
@@ -172,7 +186,6 @@ export async function showPanel(context: vscode.ExtensionContext) {
 
   const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
 
-  // equivalent to panel.webview.html = ...
   setWebviewContent(
     panel,
     context,
@@ -199,141 +212,6 @@ export async function showPanel(context: vscode.ExtensionContext) {
     "assets",
     "icon.png",
   );
-}
-
-// TODO: Move this to a util file
-function getMcqHtml(
-  _webview: vscode.Webview,
-  question: string,
-  options: string[],
-  questionId: string,
-): string {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-eval' 'unsafe-inline' https://unpkg.com; style-src 'unsafe-inline' https://unpkg.com;" />
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/marked@4.0.0/marked.min.js"></script>
-  <script>window.marked.setOptions({ breaks: true });</script>
-  <style>
-    .mcq-option {
-      color: black !important;
-    }
-    .mcq-option p {
-      margin: 0;
-      display: inline;
-    }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-    const { useState } = React;
-    
-    function McqPanel({ question, options, questionId }) {
-      const [selected, setSelected] = useState(null);
-      
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (selected === null) return;
-        const vscode = acquireVsCodeApi();
-        vscode.postMessage({ type: 'answer', answer: selected });
-      };
-
-      return (
-        <div style={{ 
-          padding: '1rem',
-          fontFamily: 'sans-serif',
-          maxWidth: '800px',
-          margin: '0 auto'
-        }}>
-          <h3>Question {parseInt(questionId) + 1}</h3>
-      <div dangerouslySetInnerHTML={{ __html: window.marked.parse(question) }} />
-          <form onSubmit={handleSubmit}>
-            <ul style={{ 
-              listStyle: 'none', 
-              padding: 0,
-              margin: '1rem 0 1.5rem 0'
-            }}>
-              {options.map((option, index) => (
-                <li 
-                  key={index} 
-                  style={{ 
-                    margin: '0.5rem 0',
-                    padding: '0.75rem',
-                    border: '1px solid #e1e4e8',
-                    borderRadius: '6px',
-                    backgroundColor: selected === index ? '#f6f8fa' : 'white',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onClick={() => setSelected(index)}
-                >
-                  <label style={{ 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    margin: 0
-                  }}>
-                    <input
-                      type="radio"
-                      name="mcq-option"
-                      checked={selected === index}
-                      onChange={() => setSelected(index)}
-                      style={{ 
-                        marginRight: '0.75rem',
-                        width: '1.25rem',
-                        height: '1.25rem',
-                        cursor: 'pointer'
-                      }}
-                    />
-                    <span 
-                      className="mcq-option"
-                      dangerouslySetInnerHTML={{ __html: window.marked.parse(option) }}
-                    />
-                  </label>
-                </li>
-              ))}
-            </ul>
-            <button 
-              type="submit"
-              disabled={selected === null}
-              style={{
-                padding: '0.5rem 1.5rem',
-                backgroundColor: selected !== null ? '#2ea043' : '#94d3a2',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: selected !== null ? 'pointer' : 'not-allowed',
-                fontSize: '1rem',
-                fontWeight: '500',
-                transition: 'background-color 0.2s',
-                opacity: selected !== null ? 1 : 0.7
-              }}
-            >
-              Submit Answer
-            </button>
-          </form>
-        </div>
-      );
-    }
-
-// Render the component
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <McqPanel 
-    question="${question.replace(/"/g, "&quot;")}" 
-    questionId="${questionId}"
-    options={${JSON.stringify(options)}}
-  />
-);
-</script>
-</body>
-</html>`;
 }
 
 export async function sendToFrontendWrapped(message: MessageType) {
