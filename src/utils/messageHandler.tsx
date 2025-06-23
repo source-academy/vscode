@@ -42,7 +42,7 @@ export class MessageHandler {
         case MessageTypeNames.ExtensionPing:
           sendToFrontend(this.panel, Messages.ExtensionPong(null));
           break;
-        case MessageTypeNames.MCQQuestion: {
+        case MessageTypeNames.McqQuestion: {
           if (this.mcqPanel === null) {
             this.mcqPanel = vscode.window.createWebviewPanel(
               "mcq-question-panel",
@@ -92,7 +92,7 @@ export class MessageHandler {
           break;
         }
 
-        case MessageTypeNames.MCQAnswer: {
+        case MessageTypeNames.McqAnswer: {
           const workspaceLocation = message.workspaceLocation;
           const assessmentName = message.assessmentName;
           const questionId = message.questionId;
@@ -101,7 +101,7 @@ export class MessageHandler {
           console.log(
             `MCQ Answer: ${assessmentName}, Question ID: ${questionId}, Choice Index: ${choiceIndex}`,
           );
-          const msg = Messages.MCQAnswer(
+          const msg = Messages.McqAnswer(
             workspaceLocation,
             assessmentName,
             questionId,

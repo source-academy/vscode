@@ -93,7 +93,7 @@ const SourceAcademy: React.FC = () => {
         console.warn("[Webview] Failed to save MCQ answer to localStorage", e);
       }
 
-      const message = Messages.MCQAnswer(
+      const message = Messages.McqAnswer(
         workspaceLocation as any,
         assessmentName,
         questionId,

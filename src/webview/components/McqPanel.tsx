@@ -59,7 +59,7 @@ export const McqPanelWithLogging: React.FC<{ data: McqData }> = ({ data }) => (
         `MCQ Answer: ${data.assessmentName}, Question ID: ${data.questionId}, Choice Index: ${choiceIndex}`,
       );
       sendToFrontendWrapped(
-        Messages.MCQAnswer(
+        Messages.McqAnswer(
           wsLoc,
           data.assessmentName,
           data.questionId,
