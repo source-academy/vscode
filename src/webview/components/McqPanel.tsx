@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Messages, { sendToWebview } from "../../utils/messages";
+import { sendToFrontendWrapped } from "../../commands/showPanel";
 
 export interface McqData {
   assessmentName: string;
@@ -31,7 +32,7 @@ const McqPanel: React.FC<McqPanelProps> = ({ data, onAnswer }) => {
                 checked={selected === idx}
                 onChange={() => {
                   setSelected(idx);
-                  onAnswer(idx);
+                  const wsLoc = data.workspaceLocation ?? "assessment";
                 }}
                 style={{ marginRight: "0.5rem" }}
               />

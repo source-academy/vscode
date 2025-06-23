@@ -85,10 +85,7 @@ export class MessageHandler {
 
           break;
         }
-        case MessageTypeNames.MCQAnswer:
-          console.log(`Received MCQ answer: ${message.choice}`);
-          sendToFrontend(this.panel, message);
-          break;
+
         case MessageTypeNames.NewEditor:
           this.activeEditor = await Editor.create(
             message.workspaceLocation,
