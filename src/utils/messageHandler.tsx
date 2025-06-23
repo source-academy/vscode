@@ -14,145 +14,149 @@ import { client } from "../extension";
 import _ from "lodash";
 import { McqPanelWithLogging as McqPanel } from "../webview/components/McqPanel";
 
-let mcqPanel: vscode.WebviewPanel | null = null;
+/*
+ * MessageHandler is a singleton class that handles messages from the frontend
+ * and manages the state of the webview panels.
+ * Design choice: Active panel, mcqPanel, and activeEditor are all stored in the same class.
+ * Trade-off: Requires an instance of MessageHandler to be created and used instead of exporting
+ * the activeEditor and active panel directly.
+ */
+export class MessageHandler {
+  private messageQueue: MessageType[] = [];
+  private handling = false;
+  public panel: vscode.WebviewPanel | null = null;
+  public mcqPanel: vscode.WebviewPanel | null = null;
+  public activeEditor: Editor | null = null;
 
-let panel: vscode.WebviewPanel | null = null;
-// This needs to be a reference to active
-// TODO: Fix this ugly code!
-export let activeEditor: Editor | null = null;
+  async handleMessage(context: vscode.ExtensionContext, message: MessageType) {
+    this.messageQueue.push(message);
+    if (this.handling) {
+      return;
+    }
+    this.handling = true;
 
-const messageQueue: MessageType[] = [];
-let handling = false;
-
-export async function handleMessage(
-  context: vscode.ExtensionContext,
-  message: MessageType,
-) {
-  messageQueue.push(message);
-  if (handling) {
-    return;
-  }
-  handling = true;
-
-  while (messageQueue.length > 0) {
-    const message = messageQueue.shift()!;
-    console.log(`${Date.now()} Beginning handleMessage: ${message.type}`);
-    switch (message.type) {
-      case MessageTypeNames.ExtensionPing:
-        sendToFrontend(panel, Messages.ExtensionPong(null));
-        break;
-      case MessageTypeNames.MCQQuestion: {
-        if (mcqPanel === null) {
-          mcqPanel = vscode.window.createWebviewPanel(
-            "mcq-question-panel",
-            `Question ${message.questionId + 1}`,
-            vscode.ViewColumn.One,
-            { enableScripts: true, retainContextWhenHidden: true },
-          );
-
-          mcqPanel.onDidDispose(() => {
-            mcqPanel = null;
-          });
-        }
-        mcqPanel.title = `Question ${message.questionId + 1}`;
-        mcqPanel.iconPath = vscode.Uri.joinPath(
-          context.extensionUri,
-          "assets",
-          "icon.png",
-        );
-        let activePanel = await McqPanel({
-          data: {
-            assessmentName: message.assessmentName ?? "",
-            questionId: message.questionId,
-            question: message.question,
-            choices: message.options,
-            workspaceLocation: message.workspaceLocation ?? "assessment",
-          },
-        });
-        setWebviewContent(
-          mcqPanel,
-          context,
-          <div
-            // @ts-ignore: Our FakeReact doesn't modify the style attribute
-            style="width: 100%; height: calc(100vh - 10px)"
-            id="mcq-panel"
-          >
-            {ReactDOMServer.renderToString(activePanel)}
-          </div>,
-        );
-        mcqPanel.reveal(vscode.ViewColumn.One);
-
-        break;
-      }
-      case MessageTypeNames.MCQAnswer:
-        console.log(`Received MCQ answer: ${message.choice}`);
-        sendToFrontend(panel, message);
-        break;
-      case MessageTypeNames.NewEditor:
-        // console.log(message.questionType + " questionType \n");
-        // if (message.questionType == "mcq") {
-        //   break;
-        // }
-        activeEditor = await Editor.create(
-          message.workspaceLocation,
-          message.assessmentName,
-          message.questionId,
-          message.prepend,
-          message.initialCode,
-        );
-        activeEditor.uri;
-        const info = context.globalState.get("info") ?? {};
-        if (activeEditor.uri) {
-          // TODO: Write our own wrapper to set nested keys easily, removing lodash
-          // @ts-ignore
-          _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter ?? 1);
-          // TODO: message.prepend can be undefined in runtime, investigate
-          const nPrependLines =
-            message.prepend && message.prepend !== ""
-              ? message.prepend.split("\n").length + 2 // account for start/end markers
-              : 0;
-          _.set(info, `["${activeEditor.uri}"].prepend`, nPrependLines);
-          context.globalState.update("info", info);
-          client.sendRequest("source/publishInfo", info);
-        }
-
-        panel?.reveal(vscode.ViewColumn.Two);
-        console.log(
-          `EXTENSION: NewEditor: activeEditor set to ${activeEditor.assessmentName}_${activeEditor.questionId}`,
-        );
-
-        activeEditor.onChange((editor) => {
-          const workspaceLocation = editor.workspaceLocation;
-          const code = editor.getText();
-          if (!code) {
-            return;
-          }
-          if (editor !== activeEditor) {
-            console.log(
-              `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
+    while (this.messageQueue.length > 0) {
+      const message = this.messageQueue.shift()!;
+      console.log(`${Date.now()} Beginning handleMessage: ${message.type}`);
+      switch (message.type) {
+        case MessageTypeNames.ExtensionPing:
+          sendToFrontend(this.panel, Messages.ExtensionPong(null));
+          break;
+        case MessageTypeNames.MCQQuestion: {
+          if (this.mcqPanel === null) {
+            this.mcqPanel = vscode.window.createWebviewPanel(
+              "mcq-question-panel",
+              `Question ${message.questionId + 1}`,
+              vscode.ViewColumn.One,
+              { enableScripts: true, retainContextWhenHidden: true },
             );
-          }
-          if (activeEditor) {
-            console.log("activeEditor keys and values:");
-            Object.entries(activeEditor).forEach(([key, value]) => {
-              console.log(`${key}:`, value);
+
+            this.mcqPanel.onDidDispose(() => {
+              this.mcqPanel = null;
             });
           }
-          const message = Messages.Text(workspaceLocation, code);
-          console.log(`Sending message: ${JSON.stringify(message)}`);
-          sendToFrontend(panel, message);
-        });
-        break;
-      // case MessageTypeNames.Text:
-      //   if (!activeEditor) {
-      //     console.log("ERROR: activeEditor is not set");
-      //     break;
-      //   }
-      //   activeEditor.replace(message.code, "Text");
-      //   break;
+          this.mcqPanel.title = `Question ${message.questionId + 1}`;
+          this.mcqPanel.iconPath = vscode.Uri.joinPath(
+            context.extensionUri,
+            "assets",
+            "icon.png",
+          );
+          let activePanel = await McqPanel({
+            data: {
+              assessmentName: message.assessmentName ?? "",
+              questionId: message.questionId,
+              question: message.question,
+              choices: message.options,
+              workspaceLocation: message.workspaceLocation ?? "assessment",
+            },
+          });
+          setWebviewContent(
+            this.mcqPanel,
+            context,
+            <div
+              // @ts-ignore: Our FakeReact doesn't modify the style attribute
+              style="width: 100%; height: calc(100vh - 10px)"
+              id="mcq-panel"
+            >
+              {ReactDOMServer.renderToString(activePanel)}
+            </div>,
+          );
+          this.mcqPanel.reveal(vscode.ViewColumn.One);
+
+          break;
+        }
+        case MessageTypeNames.MCQAnswer:
+          console.log(`Received MCQ answer: ${message.choice}`);
+          sendToFrontend(this.panel, message);
+          break;
+        case MessageTypeNames.NewEditor:
+          this.activeEditor = await Editor.create(
+            message.workspaceLocation,
+            message.assessmentName,
+            message.questionId,
+            message.prepend,
+            message.initialCode,
+          );
+          this.activeEditor.uri;
+          const info = context.globalState.get("info") ?? {};
+          if (this.activeEditor.uri) {
+            // TODO: Write our own wrapper to set nested keys easily, removing lodash
+            // @ts-ignore
+            _.set(
+              info,
+              `["${this.activeEditor.uri}"].chapter`,
+              message.chapter ?? 1,
+            );
+            // TODO: message.prepend can be undefined in runtime, investigate
+            const nPrependLines =
+              message.prepend && message.prepend !== ""
+                ? message.prepend.split("\n").length + 2 // account for start/end markers
+                : 0;
+            _.set(info, `["${this.activeEditor.uri}"].prepend`, nPrependLines);
+            context.globalState.update("info", info);
+            client.sendRequest("source/publishInfo", info);
+          }
+
+          this.panel?.reveal(vscode.ViewColumn.Two);
+          console.log(
+            `EXTENSION: NewEditor: activeEditor set to ${this.activeEditor.assessmentName}_${this.activeEditor.questionId}`,
+          );
+
+          this.activeEditor.onChange((editor: Editor) => {
+            const workspaceLocation = editor.workspaceLocation;
+            const code = editor.getText();
+            if (!code) {
+              return;
+            }
+            if (editor !== this.activeEditor) {
+              console.log(
+                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
+              );
+            }
+            if (this.activeEditor) {
+              console.log("activeEditor keys and values:");
+              Object.entries(this.activeEditor).forEach(([key, value]) => {
+                console.log(`${key}:`, value);
+              });
+            }
+            const message = Messages.Text(workspaceLocation, code);
+            console.log(`Sending message: ${JSON.stringify(message)}`);
+            sendToFrontend(this.panel, message);
+          });
+          break;
+      }
+      console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
     }
-    console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
+
+    this.handling = false;
   }
 
-  handling = false;
+  static instance: MessageHandler | null = null;
+
+  static getInstance() {
+    if (!MessageHandler.instance) {
+      MessageHandler.instance = new MessageHandler();
+    }
+    return MessageHandler.instance;
+  }
 }

@@ -13,17 +13,10 @@ import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
 import { Editor } from "../utils/editor";
 import { FRONTEND_ELEMENT_ID } from "../constants";
-import { client } from "../extension";
 import _ from "lodash";
-import { McqPanelWithLogging as McqPanel } from "../webview/components/McqPanel";
-import { handleMessage } from "../utils/messageHandler";
+import { MessageHandler } from "../utils/messageHandler";
 
-let mcqPanel: vscode.WebviewPanel | null = null;
-
-let panel: vscode.WebviewPanel | null = null;
-// This needs to be a reference to active
-// TODO: Fix this ugly code!
-export let activeEditor: Editor | null = null;
+let messageHandler = MessageHandler.getInstance();
 
 export async function showPanel(context: vscode.ExtensionContext) {
   let language: string | undefined = context.workspaceState.get("language");
@@ -34,7 +27,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
   // Get a reference to the active editor (before the focus is switched to our newly created webview)
   // firstEditor = vscode.window.activeTextEditor!;
 
-  panel = vscode.window.createWebviewPanel(
+  messageHandler.panel = vscode.window.createWebviewPanel(
     "source-academy-panel",
     "Source Academy",
     vscode.ViewColumn.Beside,
@@ -44,8 +37,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
     },
   );
 
-  panel.webview.onDidReceiveMessage(
-    (message: MessageType) => handleMessage(context, message),
+  messageHandler.panel.webview.onDidReceiveMessage(
+    (message: MessageType) => messageHandler.handleMessage(context, message),
     undefined,
     context.subscriptions,
   );
@@ -53,7 +46,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
   const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
 
   setWebviewContent(
-    panel,
+    messageHandler.panel,
     context,
     // NOTE: This is not React code, but our FakeReact!
     <div
@@ -73,7 +66,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
     </div>,
   );
 
-  panel.iconPath = vscode.Uri.joinPath(
+  messageHandler.panel.iconPath = vscode.Uri.joinPath(
     context.extensionUri,
     "assets",
     "icon.png",
@@ -81,9 +74,9 @@ export async function showPanel(context: vscode.ExtensionContext) {
 }
 
 export async function sendToFrontendWrapped(message: MessageType) {
-  if (!panel) {
+  if (!messageHandler.panel) {
     console.error("ERROR: panel is not set");
     return;
   }
-  sendToFrontend(panel, message);
+  sendToFrontend(messageHandler.panel, message);
 }
