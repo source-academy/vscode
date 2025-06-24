@@ -1,24 +1,21 @@
 import * as vscode from "vscode";
 // Allow using JSX within this file by overriding our own createElement function
 import React from "../utils/FakeReact";
-import ReactDOMServer from "react-dom/server";
 
-import Messages, {
-  MessageType,
-  MessageTypeNames,
-  sendToFrontend,
-} from "../utils/messages";
+import { MessageType, sendToFrontend } from "../utils/messages";
 import { LANGUAGES } from "../utils/languages";
 import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
-import { Editor } from "../utils/editor";
 import { FRONTEND_ELEMENT_ID } from "../constants";
-import _ from "lodash";
 import { MessageHandler } from "../utils/messageHandler";
 
 let messageHandler = MessageHandler.getInstance();
+import { SOURCE_ACADEMY_ICON_URI } from "../extension";
 
-export async function showPanel(context: vscode.ExtensionContext) {
+export async function showPanel(
+  context: vscode.ExtensionContext,
+  route?: string,
+) {
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {
     language = LANGUAGES.SOURCE_1;
@@ -43,7 +40,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
     context.subscriptions,
   );
 
-  const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
+  const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
+    .href;
 
   setWebviewContent(
     messageHandler.panel,
@@ -56,7 +54,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
     >
       <iframe
         id={FRONTEND_ELEMENT_ID}
-        src={frontendUrl}
+        src={iframeUrl}
         width="100%"
         height="100%"
         // @ts-ignore
@@ -74,6 +72,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
 }
 
 export async function sendToFrontendWrapped(message: MessageType) {
+  sendToFrontend(messageHandler.panel, message);
+  // TODO: This returning of status code shouldn't be necessary after refactor
   if (!messageHandler.panel) {
     console.error("ERROR: panel is not set");
     return;

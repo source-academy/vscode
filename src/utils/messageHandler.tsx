@@ -12,6 +12,7 @@ import { setWebviewContent } from "./webview";
 import { Editor } from "./editor";
 import { client } from "../extension";
 import _ from "lodash";
+import { treeDataProvider } from "../treeview";
 import McqPanel from "../webview/components/McqPanel";
 
 /*
@@ -164,6 +165,15 @@ export class MessageHandler {
             console.log(`Sending message: ${JSON.stringify(message)}`);
             sendToFrontend(this.panel, message);
           });
+          break;
+        case MessageTypeNames.NotifyAssessmentsOverview:
+          const { assessmentOverviews, courseId } = message;
+          context.globalState.update(
+            "assessmentOverviews",
+            assessmentOverviews,
+          );
+          context.globalState.update("courseId", courseId);
+          treeDataProvider.refresh();
           break;
       }
       console.log(`${Date.now()} Finish handleMessage: ${message.type}`);

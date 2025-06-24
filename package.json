@@ -47,8 +47,8 @@
           ".sjs"
         ],
         "icon": {
-          "light": "assets/icon.png",
-          "dark": "assets/icon.png"
+          "light": "assets/icon.svg",
+          "dark": "assets/icon.svg"
         },
         "configuration": "./language-configuration.json"
       }
@@ -64,6 +64,31 @@
       {
         "command": "source-academy.eval-editor",
         "key": "shift+enter"
+      }
+    ],
+    "views": {
+      "source-academy": [
+        {
+          "id": "assessments",
+          "name": "Assessments",
+          "icon": "assets/icon.svg",
+          "contextualTitle": "Source Academy"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "source-academy",
+          "title": "Source Academy",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "assessments",
+        "contents": "Launch the Source Academy panel to begin coding.\n[Launch!](command:source-academy.show-panel)\nNavigate to Missions page to populate this panel."
       }
     ]
   },
