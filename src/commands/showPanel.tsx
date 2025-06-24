@@ -76,7 +76,7 @@ export async function sendToFrontendWrapped(message: MessageType) {
   // TODO: This returning of status code shouldn't be necessary after refactor
   if (!messageHandler.panel) {
     console.error("ERROR: panel is not set");
-    return;
+    return false;
   }
   sendToFrontend(messageHandler.panel, message);
 }
