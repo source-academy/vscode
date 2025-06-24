@@ -109,12 +109,7 @@ async function handleMessage(
 
 export async function showPanel(
   context: vscode.ExtensionContext,
-  /*
-    route is relative to frontendUrl, while altUrl allows specifiying any arbitrary URL.
-    TODO: across this repo, move any references to backendUrl to the frontend repo, then remove altUrl param
-  */
   route?: string,
-  altUrl?: string,
 ) {
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {
@@ -140,8 +135,8 @@ export async function showPanel(
     context.subscriptions,
   );
 
-  const iframeUrl =
-    altUrl ?? new URL(route ?? "/playground", config.frontendBaseUrl).href;
+  const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
+    .href;
 
   // equivalent to panel.webview.html = ...
   setWebviewContent(
