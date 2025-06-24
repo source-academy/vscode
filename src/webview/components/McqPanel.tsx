@@ -5,7 +5,6 @@ import { sendToFrontendWrapped } from "../../commands/showPanel";
 export interface McqData {
   assessmentName: string;
   questionId: number;
-  question: string;
   choices: string[];
   workspaceLocation?: "assessment" | "playground";
 }

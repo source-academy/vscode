@@ -71,7 +71,6 @@ export class MessageHandler {
             data: {
               assessmentName: message.assessmentName ?? "",
               questionId: message.questionId,
-              question: message.question,
               choices: message.options,
               workspaceLocation: message.workspaceLocation ?? "assessment",
             },
