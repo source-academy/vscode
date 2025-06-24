@@ -6,8 +6,8 @@ export async function navigate(
   context: vscode.ExtensionContext,
   route: string,
 ) {
-  const ok = await sendToFrontendWrapped(Messages.Navigate(route));
-  if (!ok) {
+  const didNavigate = await sendToFrontendWrapped(Messages.Navigate(route));
+  if (!didNavigate) {
     vscode.commands.executeCommand("source-academy.show-panel", route);
   }
 }
