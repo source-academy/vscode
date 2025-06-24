@@ -12,7 +12,7 @@ import { setWebviewContent } from "./webview";
 import { Editor } from "./editor";
 import { client } from "../extension";
 import _ from "lodash";
-import { McqPanelWithLogging as McqPanel } from "../webview/components/McqPanel";
+import McqPanel from "../webview/components/McqPanel";
 
 /*
  * MessageHandler is a singleton class that handles messages from the frontend

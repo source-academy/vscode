@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import Messages from "../../utils/messages";
-import { sendToFrontendWrapped } from "../../commands/showPanel";
+import React from "react";
+import markdownToHtml from "../../utils/markdown";
 
 export interface McqData {
   assessmentName: string;
@@ -11,60 +10,67 @@ export interface McqData {
 
 interface McqPanelProps {
   data: McqData;
-  onAnswer: (choiceIndex: number) => void;
 }
 
-const McqPanel: React.FC<McqPanelProps> = ({ data, onAnswer }) => {
-  const [selected, setSelected] = useState<number | null>(null);
-
-  return (
-    <div style={{ padding: "1rem" }}>
-      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-        {data.choices.map((c, idx) => (
-          <li key={idx} style={{ marginBottom: "0.5rem" }}>
-            <label style={{ cursor: "pointer" }}>
-              <input
-                type="radio"
-                name="mcq-choice"
-                value={idx}
-                data-choice={idx}
-                data-ws={data.workspaceLocation ?? "assessment"}
-                data-assessment={data.assessmentName}
-                data-qid={data.questionId}
-                checked={selected === idx}
-                onChange={() => {
-                  setSelected(idx);
-                  onAnswer(idx);
-                }}
-                style={{ marginRight: "0.5rem" }}
-              />
-              {c}
-            </label>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+const panelStyle: React.CSSProperties = {
+  padding: "2rem",
+  backgroundColor: "#1e293b",
+  borderRadius: "0.5rem",
+  height: "100vh",
+  width: "100vw",
+  boxSizing: "border-box",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
-export default McqPanel;
+const listStyle: React.CSSProperties = {
+  listStyle: "none",
+  paddingLeft: 0,
+  width: "100%",
+  maxWidth: "600px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "2rem",
+};
 
-export const McqPanelWithLogging: React.FC<{ data: McqData }> = ({ data }) => (
-  <McqPanel
-    data={data}
-    onAnswer={(choiceIndex) => {
-      const wsLoc = data.workspaceLocation ?? "assessment";
-      console.log(
-        `MCQ Answer: ${data.assessmentName}, Question ID: ${data.questionId}, Choice Index: ${choiceIndex}`,
-      );
-      sendToFrontendWrapped(
-        Messages.McqAnswer(
-          wsLoc,
-          data.assessmentName,
-          data.questionId,
-          choiceIndex,
-        ),
-      );
-    }}
-  />
+const labelBaseStyle: React.CSSProperties = {
+  display: "block",
+  width: "100%",
+  padding: "1.25rem",
+  backgroundColor: "transparent",
+  borderRadius: "0.375rem",
+  cursor: "pointer",
+  color: "white",
+  fontSize: "1.25rem",
+  textAlign: "center",
+  transition: "background-color 0.3s ease",
+  border: "1px solid transparent",
+};
+
+const McqPanel: React.FC<McqPanelProps> = ({ data }) => (
+  <div style={panelStyle}>
+    <ul style={listStyle}>
+      {data.choices.map((c, idx) => (
+        <li key={idx} style={{ width: "100%" }}>
+          <label style={labelBaseStyle}>
+            <input
+              type="radio"
+              name="mcq-choice"
+              value={idx}
+              data-choice={idx}
+              data-ws={data.workspaceLocation ?? "assessment"}
+              data-assessment={data.assessmentName}
+              data-qid={data.questionId}
+              style={{ display: "none" }}
+            />
+            <span dangerouslySetInnerHTML={{ __html: markdownToHtml(c) }} />
+          </label>
+        </li>
+      ))}
+    </ul>
+  </div>
 );
+
+export default McqPanel;

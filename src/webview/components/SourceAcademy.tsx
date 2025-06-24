@@ -60,6 +60,28 @@ const SourceAcademy: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // TODO: Hacky way to update mcq panel, standard onClick handlers don't work
+    const highlightSelection = (
+      assessment: string,
+      qid: number,
+      choiceIdx: number,
+    ) => {
+      const inputs = document.querySelectorAll<HTMLInputElement>(
+        `input[name="mcq-choice"][data-assessment="${assessment}"][data-qid="${qid}"]`,
+      );
+      inputs.forEach((input) => {
+        const label = input.parentElement as HTMLElement | null;
+        if (!label) return;
+        if (parseInt(input.dataset.choice ?? "-1", 10) === choiceIdx) {
+          label.style.backgroundColor = "#475569";
+          label.style.border = "1px solid #94a3b8";
+        } else {
+          label.style.backgroundColor = "transparent";
+          label.style.border = "1px solid transparent";
+        }
+      });
+    };
+
     const handleChoiceChange = (e: Event) => {
       const target = e.target as HTMLInputElement;
       if (!target || target.name !== "mcq-choice") {
@@ -77,6 +99,9 @@ const SourceAcademy: React.FC = () => {
       ) {
         return;
       }
+
+      highlightSelection(assessmentName, questionId, choice);
+
       console.log("[MCQPanel] choice selected", {
         workspaceLocation,
         assessmentName,
@@ -89,8 +114,11 @@ const SourceAcademy: React.FC = () => {
           `mcq_${assessmentName}_${questionId}`,
           String(choice),
         );
-      } catch (e) {
-        console.warn("[Webview] Failed to save MCQ answer to localStorage", e);
+      } catch (err) {
+        console.warn(
+          "[Webview] Failed to save MCQ answer to localStorage",
+          err,
+        );
       }
 
       const message = Messages.McqAnswer(
@@ -115,6 +143,12 @@ const SourceAcademy: React.FC = () => {
           const stored = localStorage.getItem(`mcq_${assess}_${qid}`);
           if (stored !== null && stored === el.dataset.choice) {
             el.checked = true;
+            // apply visual highlight on restore
+            const label = el.parentElement as HTMLElement | null;
+            if (label) {
+              label.style.backgroundColor = "#475569";
+              label.style.border = "1px solid #94a3b8";
+            }
           }
         });
     };
