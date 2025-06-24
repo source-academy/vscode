@@ -5,7 +5,10 @@
   "license": "Apache-2.0",
   "displayName": "Source Academy",
   "description": "VS Code extension for Source Academy",
-  "repository": "https://github.com/source-academy/vscode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/source-academy/vscode"
+  },
   "categories": [
     "Programming Languages",
     "Education"
