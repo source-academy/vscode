@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import * as os from "os";
 
 import config from "../utils/config";
-import { VscWorkspaceLocation } from "./messages";
+import Messages, { VscWorkspaceLocation } from "./messages";
 import path from "path";
+import { sendToFrontendWrapped } from "../commands/showPanel";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -98,6 +99,13 @@ export class Editor {
                   uri,
                   new TextEncoder().encode(contents),
                 );
+              } else if (answer === undefined) {
+                // Modal cancelled
+                const message = Messages.Text(
+                  self.workspaceLocation,
+                  value.toString(),
+                );
+                sendToFrontendWrapped(message);
               }
             });
         }
