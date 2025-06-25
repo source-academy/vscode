@@ -12,8 +12,9 @@ import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
 import { Editor } from "../utils/editor";
 import { FRONTEND_ELEMENT_ID } from "../constants";
-import { client } from "../extension";
+import { client, SOURCE_ACADEMY_ICON_URI } from "../extension";
 import _ from "lodash";
+import { treeDataProvider } from "../treeview";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
@@ -93,6 +94,12 @@ async function handleMessage(
       //   }
       //   activeEditor.replace(message.code, "Text");
       //   break;
+      case MessageTypeNames.NotifyAssessmentsOverview:
+        const { assessmentOverviews, courseId } = message;
+        context.globalState.update("assessmentOverviews", assessmentOverviews);
+        context.globalState.update("courseId", courseId);
+        treeDataProvider.refresh();
+        break;
     }
     console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
   }
@@ -100,7 +107,10 @@ async function handleMessage(
   handling = false;
 }
 
-export async function showPanel(context: vscode.ExtensionContext) {
+export async function showPanel(
+  context: vscode.ExtensionContext,
+  route?: string,
+) {
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {
     language = LANGUAGES.SOURCE_1;
@@ -125,7 +135,8 @@ export async function showPanel(context: vscode.ExtensionContext) {
     context.subscriptions,
   );
 
-  const frontendUrl = new URL("/playground", config.frontendBaseUrl).href;
+  const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
+    .href;
 
   // equivalent to panel.webview.html = ...
   setWebviewContent(
@@ -139,7 +150,7 @@ export async function showPanel(context: vscode.ExtensionContext) {
     >
       <iframe
         id={FRONTEND_ELEMENT_ID}
-        src={frontendUrl}
+        src={iframeUrl}
         width="100%"
         height="100%"
         // @ts-ignore
@@ -149,18 +160,16 @@ export async function showPanel(context: vscode.ExtensionContext) {
     </div>,
   );
 
-  panel.iconPath = vscode.Uri.joinPath(
-    context.extensionUri,
-    "assets",
-    "icon.png",
-  );
+  panel.iconPath = SOURCE_ACADEMY_ICON_URI;
 }
 
 // TODO: Move this to a util file
 export async function sendToFrontendWrapped(message: MessageType) {
+  // TODO: This returning of status code shouldn't be necessary after refactor
   if (!panel) {
     console.error("ERROR: panel is not set");
-    return;
+    return false;
   }
   sendToFrontend(panel, message);
+  return true;
 }

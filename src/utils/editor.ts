@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
-import * as os from "os";
 
 import config from "../utils/config";
 import Messages, { VscWorkspaceLocation } from "./messages";
 import path from "path";
 import { sendToFrontendWrapped } from "../commands/showPanel";
+import { canonicaliseLocation } from "./misc";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -50,13 +50,7 @@ export class Editor {
     self.assessmentName = assessmentName;
     self.questionId = questionId;
 
-    let workspaceFolder = config.workspaceFolder;
-    if (!workspaceFolder) {
-      workspaceFolder = path.join(os.homedir(), ".sourceacademy");
-      // TODO: Prompt the user to make this folder the default, and then set back to the config store.
-    } else if (!path.isAbsolute(workspaceFolder)) {
-      workspaceFolder = path.join(os.homedir(), workspaceFolder);
-    }
+    const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
 
     const filePath = path.join(
       workspaceFolder,
@@ -123,6 +117,7 @@ export class Editor {
       preview: false,
       viewColumn: vscode.ViewColumn.One,
     });
+    vscode.languages.setTextDocumentLanguage(editor.document, "source");
     editor.selection = new vscode.Selection(
       editor.document.positionAt(0),
       editor.document.positionAt(1),

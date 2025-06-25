@@ -1,11 +1,14 @@
 {
   "name": "source-academy",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "publisher": "source-academy",
   "license": "Apache-2.0",
   "displayName": "Source Academy",
   "description": "VS Code extension for Source Academy",
-  "repository": "https://github.com/source-academy/vscode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/source-academy/vscode"
+  },
   "categories": [
     "Programming Languages",
     "Education"
@@ -37,6 +40,11 @@
           "type": "string",
           "default": "https://frontend.cloud.heyzec.dedyn.io",
           "description": "URL to the Source Academy frontend"
+        },
+        "source-academy.workspaceFolder": {
+          "type": "string",
+          "default": ".sourceacademy",
+          "description": "Location to store code locally. If not absolute, it will be relative to the home directory."
         }
       }
     },
@@ -47,8 +55,8 @@
           ".sjs"
         ],
         "icon": {
-          "light": "assets/icon.png",
-          "dark": "assets/icon.png"
+          "light": "assets/icon.svg",
+          "dark": "assets/icon.svg"
         },
         "configuration": "./language-configuration.json"
       }
@@ -64,6 +72,31 @@
       {
         "command": "source-academy.eval-editor",
         "key": "shift+enter"
+      }
+    ],
+    "views": {
+      "source-academy": [
+        {
+          "id": "assessments",
+          "name": "Assessments",
+          "icon": "assets/icon.svg",
+          "contextualTitle": "Source Academy"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "source-academy",
+          "title": "Source Academy",
+          "icon": "assets/icon.svg"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "assessments",
+        "contents": "Launch the Source Academy panel to begin coding.\n[Launch!](command:source-academy.show-panel)\nNavigate to Missions page to populate this panel."
       }
     ]
   },
