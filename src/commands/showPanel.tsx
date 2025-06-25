@@ -64,11 +64,7 @@ export async function showPanel(
     </div>,
   );
 
-  messageHandler.panel.iconPath = vscode.Uri.joinPath(
-    context.extensionUri,
-    "assets",
-    "icon.png",
-  );
+  messageHandler.panel.iconPath = SOURCE_ACADEMY_ICON_URI;
 }
 
 export async function sendToFrontendWrapped(message: MessageType) {
@@ -79,4 +75,5 @@ export async function sendToFrontendWrapped(message: MessageType) {
     return false;
   }
   sendToFrontend(messageHandler.panel, message);
+  return true;
 }

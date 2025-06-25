@@ -48,6 +48,16 @@ const Messages = createMessages({
   EvalEditor: (workspaceLocation: VscWorkspaceLocation) => ({
     workspaceLocation: workspaceLocation,
   }),
+  NotifyAssessmentsOverview: (
+    assessmentOverviews: VscAssessmentOverview[],
+    courseId: number,
+  ) => ({
+    assessmentOverviews,
+    courseId,
+  }),
+  Navigate: (route: string) => ({
+    route,
+  }),
   McqQuestion: (
     workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
