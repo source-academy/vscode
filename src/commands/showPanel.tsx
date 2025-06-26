@@ -15,7 +15,7 @@ import { FRONTEND_ELEMENT_ID } from "../constants";
 import { client, SOURCE_ACADEMY_ICON_URI } from "../extension";
 import _ from "lodash";
 import { treeDataProvider } from "../treeview";
-import { getNumPrependLines } from "../utils/editorUtils";
+import { codeRemovePrepend, getNumPrependLines } from "../utils/editorUtils";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
@@ -78,8 +78,10 @@ async function handleMessage(
               `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
             );
           }
-          const message = Messages.Text(workspaceLocation, code);
-          console.log(`Sending message: ${JSON.stringify(message)}`);
+          const message = Messages.Text(
+            workspaceLocation,
+            codeRemovePrepend(code),
+          );
           sendToFrontend(panel, message);
         });
         break;
