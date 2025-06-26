@@ -196,4 +196,19 @@ export class Editor {
   ) {
     this.onChangeCallback = callback;
   }
+
+  reset(prepend: string, initialCode: string) {
+    this.log(`EXTENSION: Editor's reset called`);
+    this.replace(
+      prepend !== ""
+        ? [
+            "// PREPEND -- DO NOT EDIT",
+            prepend,
+            "// END PREPEND",
+            initialCode,
+          ].join("\n")
+        : initialCode,
+      "reset",
+    );
+  }
 }

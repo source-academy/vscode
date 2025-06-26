@@ -111,7 +111,12 @@ export class MessageHandler {
           sendToFrontend(this.panel, msg);
           break;
         }
-
+        case MessageTypeNames.ResetEditor:
+          if (this.activeEditor) {
+            this.activeEditor.reset("", message.initialCode);
+            this.panel?.reveal(vscode.ViewColumn.Two);
+          }
+          break;
         case MessageTypeNames.NewEditor:
           this.activeEditor = await Editor.create(
             message.workspaceLocation,
