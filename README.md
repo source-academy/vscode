@@ -1,31 +1,62 @@
-# VS Code
+# Source Academy & VS Code
 
-Experimental project for running Source Academy within Visual Studio Code.
+<p align="center">
+   <img src="./assets/icon.png" width="150">
+</p>
 
-## How to use
+A Visual Studio Code extension for integration with [Source Academy](https://about.sourceacademy.org), an online experiential environment for computational thinking.
 
-TODO: Add instructions
+It is available in the VS Code [Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=source-academy.source-academy).
 
-## Notes to developers
+## Features
 
-### Running the extension in dev mode
+- View, edit, and submit assessments
+- Syntax highlighting for Source
+- Integration with our [language server for Source](https://github.com/source-academy/source-lsp), which provides smart features such as:
+  - Error checking
+  - Code completion
+  - Hover documentation
 
-1. Setup the project
-   ```
-   yarn
-   ```
-1. Compile
-   ```
-   yarn compile
-   ```
-1. Run the extension in debug mode by opening the root folder a VSCode window, then "Start Debugging" (or press F5).
+## Installing
 
-### Publishing the extension
+If you don't have VS Code installed yet, download it from [here](https://code.visualstudio.com/docs/setup/setup-overview) first.
 
-For a new release, update the version in `package.json` and tag the commit. Push the commit and the tag to the repo,
-which will trigger GitHub Actions to build and publish the extension to Releases tab and the Marketplace.
+From within VS Code,
+
+1. Click on the Extensions icon on the left sidebar or the `View: Show Extensions` command (`Ctrl+Shift+X`).
+2. Search for "Source Academy" and install it.
+
+We'd recommend also installing the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) extension
+to show diagnostic messages more prominently.
+
+## Getting started
+
+_If you don't have an existing Source Academy account, you can try out our public frontend. See section [Changing the frontend](#changing-the-frontend)._
+
+After installing the extension,
+
+1. Click on the newly-added Source Academy icon on the left sidebar.
+2. Launch the Source Academy panel.
+
+<img src="./docs/images/launch-panel-from-sidebar.png" width="600">
+
+Alternatively, use the `Source Academy: Show the Source Academy Panel` command.
+
+Once the panel loads, you'll be prompted to log in. Afterwards, begin coding by opening any assessment.
+
+### Changing the frontend
+
+To use a different Source Academy frontend, modify the Frontend Base URL setting:
+
+1. Press `Ctrl + ,` to open VS Code's settings page, then search for `frontendBaseUrl`.
+2. Enter a valid URL.
+
+Example value (public frontend):
 
 ```
-npm version (major|minor|patch)
-git push origin main --tags
+https://sourceacademy.org
 ```
+
+## For developers
+
+Check out our [developer guide](./docs/developer-guide.md) for instructions to setup and run the extension from source.

@@ -8,6 +8,14 @@ export const isVscWorkspaceLocation = (s: any) =>
   VscWorkspaceLocationArray.includes(s);
 export type VscWorkspaceLocation = "assessment" | "playground";
 
+export type VscAssessmentOverview = {
+  type: string;
+  closeAt: string;
+  id: number;
+  isPublished?: boolean;
+  title: string;
+};
+
 // ================================================================================
 // Message type definitions
 // ================================================================================
@@ -51,6 +59,16 @@ const Messages = createMessages({
     chapter,
     variant
   })
+  NotifyAssessmentsOverview: (
+    assessmentOverviews: VscAssessmentOverview[],
+    courseId: number,
+  ) => ({
+    assessmentOverviews,
+    courseId,
+  }),
+  Navigate: (route: string) => ({
+    route,
+  }),
 });
 
 export default Messages;

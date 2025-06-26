@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
-import * as os from "os";
 
 import config from "../utils/config";
-import { VscWorkspaceLocation } from "./messages";
+import Messages, { VscWorkspaceLocation } from "./messages";
 import path from "path";
+import { sendToFrontendWrapped } from "../commands/showPanel";
+import { canonicaliseLocation } from "./misc";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -37,6 +38,7 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
+<<<<<<< chapter-selection
   static getFilePath(assessmentName: string, questionId: number): string {
     let workspaceFolder = config.workspaceFolder;
     if (!workspaceFolder) {
@@ -45,6 +47,21 @@ export class Editor {
     } else if (!path.isAbsolute(workspaceFolder)) {
       workspaceFolder = path.join(os.homedir(), workspaceFolder);
     }
+=======
+  // TODO: This method is too loaded, it's not obvious it also shows the editor
+  static async create(
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+    prepend: string = "",
+    initialCode: string = "",
+  ): Promise<Editor> {
+    const self = new Editor(workspaceLocation, assessmentName, questionId);
+    self.assessmentName = assessmentName;
+    self.questionId = questionId;
+
+    const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
+>>>>>>> main
 
     const filePath = path.join(
       workspaceFolder,
@@ -70,16 +87,20 @@ export class Editor {
     const uri = vscode.Uri.file(filePath);
     self.uri = uri.toString();
 
-    const contents = [
-      "// PREPEND -- DO NOT EDIT",
-      prepend,
-      "// END PREPEND",
-      initialCode,
-    ].join("\n");
+    const contents =
+      prepend !== ""
+        ? [
+            "// PREPEND -- DO NOT EDIT",
+            prepend,
+            "// END PREPEND",
+            initialCode,
+          ].join("\n")
+        : initialCode;
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {
         if (value.toString() !== contents) {
+<<<<<<< chapter-selection
           self.log("EXTENSION: Conflict detected between local and remote, prompting user to choose one")
           vscode.window
             .showInformationMessage(
@@ -90,13 +111,43 @@ export class Editor {
               // By default the code displayed is the local one
               if (answer === "Server") {
                 self.log('EXTENSION: Saving program from server to file')
+=======
+          self.log(
+            "EXTENSION: Conflict detected between local and remote, prompting user to choose one",
+          );
+          vscode.window
+            .showInformationMessage(
+              [
+                "The local file differs from the version on the Source Academy servers.",
+                "Discard the local file and use the one on the server?",
+              ].join(" "),
+              { modal: true },
+              "Yes",
+            )
+            .then(async (answer) => {
+              // By default the code displayed is the local one
+              if (answer === "Yes") {
+                self.log("EXTENSION: Saving program from server to file");
+>>>>>>> main
                 await vscode.workspace.fs.writeFile(
                   uri,
                   new TextEncoder().encode(contents),
                 );
+<<<<<<< chapter-selection
               }
             })
 
+=======
+              } else if (answer === undefined) {
+                // Modal cancelled
+                const message = Messages.Text(
+                  self.workspaceLocation,
+                  value.toString(),
+                );
+                sendToFrontendWrapped(message);
+              }
+            });
+>>>>>>> main
         }
       },
       async () => {
@@ -112,6 +163,7 @@ export class Editor {
       preview: false,
       viewColumn: vscode.ViewColumn.One,
     });
+    vscode.languages.setTextDocumentLanguage(editor.document, "source");
     editor.selection = new vscode.Selection(
       editor.document.positionAt(0),
       editor.document.positionAt(1),
@@ -119,6 +171,7 @@ export class Editor {
     vscode.commands.executeCommand("editor.fold");
 
     self.editor = editor;
+<<<<<<< chapter-selection
     vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (!self.onChangeCallback) {
         return;
@@ -138,6 +191,29 @@ export class Editor {
       self.onChangeCallback(self);
       self.code = text;
     });
+=======
+    vscode.workspace.onDidChangeTextDocument(
+      (e: vscode.TextDocumentChangeEvent) => {
+        if (!self.onChangeCallback) {
+          return;
+        }
+        const text = editor.document.getText();
+        if (e.contentChanges.length === 0) {
+          self.log(`EXTENSION: Editor's code did not change, ignoring`);
+          return;
+        }
+        if (Date.now() - self.replaceTime < 1000) {
+          self.log(
+            `EXTENSION: Ignoring change event, ${Date.now() - self.replaceTime}ms since last replace`,
+          );
+          return;
+        }
+        self.log(`EXTENSION: Editor's code changed!`);
+        self.onChangeCallback(self);
+        self.code = text;
+      },
+    );
+>>>>>>> main
     return self;
   }
 

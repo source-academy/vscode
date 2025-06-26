@@ -1,35 +1,25 @@
 {
-  description = "Template for a direnv shell, with NodeJS";
+  description = "nix-direnv shell for developing Source Academy's VS Code extension";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/23.11";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs }:
-  let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
-  in
-  {
-    devShells.${system}.default = pkgs.mkShell {
-      packages = with pkgs; [
-        nodejs_20
-        (yarn.override {
-          nodejs = nodejs_20;
-        })
-
-        # The following is only needed by js-slang, to remove in the future
-        # Additional libs needed by yarn when installing
-        pkg-config
-        xorg.libX11
-        xorg.libXi
-        libGL
-
-        python310
-        xorg.libXext
-
-        gcc11
-      ];
-    };
-  };
+  outputs = {
+    nixpkgs,
+    flake-utils,
+    ...
+  }:
+    flake-utils.lib.eachDefaultSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            # For dev ease of use, follow NodeJS version in source-academy/frontend
+            nodejs_20
+            (yarn-berry.override {nodejs = nodejs_20;})
+          ];
+        };
+      }
+    );
 }
