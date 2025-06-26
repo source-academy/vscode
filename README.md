@@ -29,6 +29,9 @@ From within VS Code,
 We'd recommend also installing the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) extension
 to show diagnostic messages more prominently.
 
+Source Academy will store your code in the `.sourceacademy` folder of your home directory by default, which you may change in the settings.
+If asked, `Do you trust the authors of the files in this folder?`, do click on `Yes, I trust the authors`.
+
 ## Getting started
 
 _If you don't have an existing Source Academy account, you can try out our public frontend. See section [Changing the frontend](#changing-the-frontend)._
