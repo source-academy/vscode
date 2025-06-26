@@ -38,37 +38,14 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
-<<<<<<< chapter-selection
   static getFilePath(assessmentName: string, questionId: number): string {
-    let workspaceFolder = config.workspaceFolder;
-    if (!workspaceFolder) {
-      workspaceFolder = path.join(os.homedir(), ".sourceacademy");
-      // TODO: Prompt the user to make this folder the default, and then set back to the config store.
-    } else if (!path.isAbsolute(workspaceFolder)) {
-      workspaceFolder = path.join(os.homedir(), workspaceFolder);
-    }
-=======
-  // TODO: This method is too loaded, it's not obvious it also shows the editor
-  static async create(
-    workspaceLocation: VscWorkspaceLocation,
-    assessmentName: string,
-    questionId: number,
-    prepend: string = "",
-    initialCode: string = "",
-  ): Promise<Editor> {
-    const self = new Editor(workspaceLocation, assessmentName, questionId);
-    self.assessmentName = assessmentName;
-    self.questionId = questionId;
-
     const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
->>>>>>> main
-
     const filePath = path.join(
       workspaceFolder,
       `${assessmentName}_${questionId}.js`,
     );
 
-    return filePath
+    return filePath;
   }
 
   // TODO: This method is too loaded, it's not obvious it also shows the editor
@@ -100,18 +77,6 @@ export class Editor {
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {
         if (value.toString() !== contents) {
-<<<<<<< chapter-selection
-          self.log("EXTENSION: Conflict detected between local and remote, prompting user to choose one")
-          vscode.window
-            .showInformationMessage(
-              "The program on file differs from the one on the Source Academy servers." +
-              "Which program should we use? (Note that picking one will overwrite the other)",
-              "Local", "Server")
-            .then(async answer => {
-              // By default the code displayed is the local one
-              if (answer === "Server") {
-                self.log('EXTENSION: Saving program from server to file')
-=======
           self.log(
             "EXTENSION: Conflict detected between local and remote, prompting user to choose one",
           );
@@ -128,16 +93,10 @@ export class Editor {
               // By default the code displayed is the local one
               if (answer === "Yes") {
                 self.log("EXTENSION: Saving program from server to file");
->>>>>>> main
                 await vscode.workspace.fs.writeFile(
                   uri,
                   new TextEncoder().encode(contents),
                 );
-<<<<<<< chapter-selection
-              }
-            })
-
-=======
               } else if (answer === undefined) {
                 // Modal cancelled
                 const message = Messages.Text(
@@ -147,7 +106,6 @@ export class Editor {
                 sendToFrontendWrapped(message);
               }
             });
->>>>>>> main
         }
       },
       async () => {
@@ -171,27 +129,6 @@ export class Editor {
     vscode.commands.executeCommand("editor.fold");
 
     self.editor = editor;
-<<<<<<< chapter-selection
-    vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-      if (!self.onChangeCallback) {
-        return;
-      }
-      const text = editor.document.getText();
-      if (e.contentChanges.length === 0) {
-        self.log(`EXTENSION: Editor's code did not change, ignoring`);
-        return;
-      }
-      if (Date.now() - self.replaceTime < 1000) {
-        self.log(
-          `EXTENSION: Ignoring change event, ${Date.now() - self.replaceTime}ms since last replace`,
-        );
-        return;
-      }
-      self.log(`EXTENSION: Editor's code changed!`);
-      self.onChangeCallback(self);
-      self.code = text;
-    });
-=======
     vscode.workspace.onDidChangeTextDocument(
       (e: vscode.TextDocumentChangeEvent) => {
         if (!self.onChangeCallback) {
@@ -213,7 +150,6 @@ export class Editor {
         self.code = text;
       },
     );
->>>>>>> main
     return self;
   }
 

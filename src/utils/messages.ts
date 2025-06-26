@@ -52,13 +52,13 @@ const Messages = createMessages({
     assessmentName: string,
     questionId: number,
     chapter: number,
-    variant: string
+    variant: string,
   ) => ({
     assessmentName,
     questionId,
     chapter,
-    variant
-  })
+    variant,
+  }),
   NotifyAssessmentsOverview: (
     assessmentOverviews: VscAssessmentOverview[],
     courseId: number,
