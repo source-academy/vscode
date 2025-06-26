@@ -5,8 +5,8 @@
 // ================================================================================
 
 // If this is edited, also change folding.markers.{start,end} in language-configuration.json
-const PREPEND_MARKER_START = "// PREPEND -- DO NOT EDIT";
-const PREPEND_MARKER_END = "// END PREPEND";
+const PREPEND_MARKER_START = "// PREPEND";
+const PREPEND_MARKER_END = "// END PREPEND -- DO NOT EDIT PREPEND";
 
 export function codeAddPrepend(code: string, prepend: string) {
   if (prepend === "") {
