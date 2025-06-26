@@ -24,7 +24,7 @@ If you don't have VS Code installed yet, download it from [here](https://code.vi
 From within VS Code,
 
 1. Click on the Extensions icon on the left sidebar or the `View: Show Extensions` command (`Ctrl+Shift+X`).
-2. Search for "Source Academy" and install it.
+2. Search for "Source Academy" and click "Install". When prompted for `Do you trust the publisher "Source Academy"?` click `Trust Publisher & Install`.
 
 We'd recommend also installing the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) extension
 to show diagnostic messages more prominently.
