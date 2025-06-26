@@ -1,3 +1,4 @@
+// TODO: Move this file to src/features/editor/editor.ts
 import * as vscode from "vscode";
 
 import config from "../utils/config";
@@ -5,6 +6,7 @@ import Messages, { VscWorkspaceLocation } from "./messages";
 import path from "path";
 import { sendToFrontendWrapped } from "../commands/showPanel";
 import { canonicaliseLocation } from "./misc";
+import { codeAddPrepend } from "./editorUtils";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -60,15 +62,7 @@ export class Editor {
     const uri = vscode.Uri.file(filePath);
     self.uri = uri.toString();
 
-    const contents =
-      prepend !== ""
-        ? [
-            "// PREPEND -- DO NOT EDIT",
-            prepend,
-            "// END PREPEND",
-            initialCode,
-          ].join("\n")
-        : initialCode;
+    const contents = codeAddPrepend(initialCode, prepend);
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {

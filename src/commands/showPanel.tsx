@@ -15,6 +15,7 @@ import { FRONTEND_ELEMENT_ID } from "../constants";
 import { client, SOURCE_ACADEMY_ICON_URI } from "../extension";
 import _ from "lodash";
 import { treeDataProvider } from "../treeview";
+import { getNumPrependLines } from "../utils/editorUtils";
 
 let panel: vscode.WebviewPanel | null = null;
 // This needs to be a reference to active
@@ -55,13 +56,8 @@ async function handleMessage(
         const info = context.globalState.get("info") ?? {};
         if (activeEditor.uri) {
           // TODO: Write our own wrapper to set nested keys easily, removing lodash
-          // @ts-ignore
           _.set(info, `["${activeEditor.uri}"].chapter`, message.chapter ?? 1);
-          // TODO: message.prepend can be undefined in runtime, investigate
-          const nPrependLines =
-            message.prepend && message.prepend !== ""
-              ? message.prepend.split("\n").length + 2 // account for start/end markers
-              : 0;
+          const nPrependLines = getNumPrependLines(message.prepend);
           _.set(info, `["${activeEditor.uri}"].prepend`, nPrependLines);
           context.globalState.update("info", info);
           client.sendRequest("source/publishInfo", info);
