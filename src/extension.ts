@@ -10,7 +10,7 @@ import { canonicaliseLocation } from "./utils/misc";
 import config from "./utils/config";
 
 // TODO: Don't expose this object directly, create an interface via a wrapper class
-export let client: LanguageClient;
+export let client: LanguageClien;
 
 export let SOURCE_ACADEMY_ICON_URI: vscode.Uri;
 
