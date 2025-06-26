@@ -197,7 +197,31 @@ export class Editor {
     this.onChangeCallback = callback;
   }
 
-  reset(prepend: string, initialCode: string) {
+  async save() {
+    this.log(`EXTENSION: Editor's save called`);
+    if (!this.editor) {
+      this.log(`EXTENSION: Editor is not defined, cannot save`);
+      return;
+    }
+    const text = this.editor.document.getText();
+    if (text === "") {
+      this.log(`EXTENSION: Editor's code is empty, not saving`);
+      return;
+    }
+    await vscode.workspace.fs.writeFile(
+      vscode.Uri.file(this.editor.document.fileName),
+      new TextEncoder().encode(text),
+    );
+    this.log(`EXTENSION: Editor's code saved successfully`);
+    //?: Send the code to the frontend - if needed
+    // const message = Messages.Text(
+    //   this.workspaceLocation,
+    //   text,
+    // );
+    // sendToFrontendWrapped(message);
+  }
+
+  async reset(prepend: string, initialCode: string) {
     this.log(`EXTENSION: Editor's reset called`);
     this.replace(
       prepend !== ""
@@ -210,5 +234,7 @@ export class Editor {
         : initialCode,
       "reset",
     );
+    await this.save();
+    this.log(`EXTENSION: Editor's code reset successfully`);
   }
 }
