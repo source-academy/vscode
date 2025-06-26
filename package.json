@@ -116,15 +116,15 @@
     "build:syntax": "js-yaml syntaxes/source.tmLanguage.yaml > syntaxes/source.tmLanguage.json",
     "watch": "node scripts/esbuild.js --watch",
     "download-lsp": "node scripts/lsp.js",
-    "format": "yarn prettier . --write",
+    "format": "prettier . --write",
     "vscode:prepublish": "yarn run download-lsp && yarn run build",
     "package": "vsce package --no-dependencies",
     "test:syntax": "yarn run build:syntax && vscode-tmgrammar-test ./tests/syntaxes/*",
-    "test": "yarn test:syntax"
+    "test": "yarn run test:syntax"
   },
   "lint-staged": {
     "**/*": [
-      "yarn prettier --write"
+      "prettier --write"
     ]
   },
   "devDependencies": {

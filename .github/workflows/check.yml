@@ -17,7 +17,7 @@ jobs:
         run: yarn install --immutable
       - name: Lint
         # TODO: Add proper linting command
-        run: yarn format
+        run: yarn run format
 
   test:
     needs: lint
@@ -33,4 +33,4 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Test
-        run: yarn test
+        run: yarn run test
