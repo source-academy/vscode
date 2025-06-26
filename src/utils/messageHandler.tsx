@@ -47,7 +47,7 @@ export class MessageHandler {
           if (this.mcqPanel === null) {
             this.mcqPanel = vscode.window.createWebviewPanel(
               "mcq-question-panel",
-              `Question ${message.questionId + 1}`,
+              `MCQ`,
               vscode.ViewColumn.One,
               { enableScripts: true, retainContextWhenHidden: true },
             );
@@ -62,7 +62,7 @@ export class MessageHandler {
               this.mcqPanel = null;
             });
           }
-          this.mcqPanel.title = `Question ${message.questionId + 1}`;
+          this.mcqPanel.title = `MCQ`;
           this.mcqPanel.iconPath = vscode.Uri.joinPath(
             context.extensionUri,
             "assets",
@@ -154,12 +154,6 @@ export class MessageHandler {
               console.log(
                 `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
               );
-            }
-            if (this.activeEditor) {
-              console.log("activeEditor keys and values:");
-              Object.entries(this.activeEditor).forEach(([key, value]) => {
-                console.log(`${key}:`, value);
-              });
             }
             const message = Messages.Text(workspaceLocation, code);
             console.log(`Sending message: ${JSON.stringify(message)}`);
