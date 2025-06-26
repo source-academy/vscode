@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import * as os from "os";
 
 import config from "../utils/config";
-import { VscWorkspaceLocation } from "./messages";
+import Messages, { VscWorkspaceLocation } from "./messages";
 import path from "path";
+import { sendToFrontendWrapped } from "../commands/showPanel";
 import { canonicaliseLocation } from "./misc";
 
 export class Editor {
@@ -73,7 +73,39 @@ export class Editor {
         : initialCode;
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
-      () => null,
+      (value) => {
+        if (value.toString() !== contents) {
+          self.log(
+            "EXTENSION: Conflict detected between local and remote, prompting user to choose one",
+          );
+          vscode.window
+            .showInformationMessage(
+              [
+                "The local file differs from the version on the Source Academy servers.",
+                "Discard the local file and use the one on the server?",
+              ].join(" "),
+              { modal: true },
+              "Yes",
+            )
+            .then(async (answer) => {
+              // By default the code displayed is the local one
+              if (answer === "Yes") {
+                self.log("EXTENSION: Saving program from server to file");
+                await vscode.workspace.fs.writeFile(
+                  uri,
+                  new TextEncoder().encode(contents),
+                );
+              } else if (answer === undefined) {
+                // Modal cancelled
+                const message = Messages.Text(
+                  self.workspaceLocation,
+                  value.toString(),
+                );
+                sendToFrontendWrapped(message);
+              }
+            });
+        }
+      },
       async () => {
         self.log(`Opening file failed, creating at ${filePath}`);
         await vscode.workspace.fs.writeFile(
@@ -95,25 +127,27 @@ export class Editor {
     vscode.commands.executeCommand("editor.fold");
 
     self.editor = editor;
-    vscode.workspace.onDidChangeTextDocument(() => {
-      if (!self.onChangeCallback) {
-        return;
-      }
-      const text = editor.document.getText();
-      if (self.code === text) {
-        self.log(`EXTENSION: Editor's code did not change, ignoring`);
-        return;
-      }
-      if (Date.now() - self.replaceTime < 1000) {
-        self.log(
-          `EXTENSION: Ignoring change event, ${Date.now() - self.replaceTime}ms since last replace`,
-        );
-        return;
-      }
-      self.log(`EXTENSION: Editor's code changed! ${text}`);
-      self.onChangeCallback(self);
-      self.code = text;
-    });
+    vscode.workspace.onDidChangeTextDocument(
+      (e: vscode.TextDocumentChangeEvent) => {
+        if (!self.onChangeCallback) {
+          return;
+        }
+        const text = editor.document.getText();
+        if (e.contentChanges.length === 0) {
+          self.log(`EXTENSION: Editor's code did not change, ignoring`);
+          return;
+        }
+        if (Date.now() - self.replaceTime < 1000) {
+          self.log(
+            `EXTENSION: Ignoring change event, ${Date.now() - self.replaceTime}ms since last replace`,
+          );
+          return;
+        }
+        self.log(`EXTENSION: Editor's code changed!`);
+        self.onChangeCallback(self);
+        self.code = text;
+      },
+    );
     return self;
   }
 
