@@ -166,7 +166,7 @@ export async function showPanel(
     if (e.uri.toString() === activeEditor?.uri) {
       const message = Messages.AssessmentAnswer(
         activeEditor.questionId,
-        activeEditor.code ? activeEditor.code.split("\n").slice(activeEditor.num_prepend_lines).join("\n") : ""
+        activeEditor.getActualCode()
       );
 
       sendToFrontend(panel, message);

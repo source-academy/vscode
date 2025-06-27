@@ -39,6 +39,10 @@ export class Editor {
     return this.editor?.document.getText();
   }
 
+  getActualCode(): string {
+    return this.code ? this.code.split("\n").slice(this.num_prepend_lines).join("\n") : ""
+  }
+
   // TODO: This method is too loaded, it's not obvious it also shows the editor
   static async create(
     workspaceLocation: VscWorkspaceLocation,
