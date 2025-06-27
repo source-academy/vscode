@@ -73,10 +73,8 @@ async function handleMessage(
         );
         activeEditor.onChange((editor) => {
           const workspaceLocation = editor.workspaceLocation;
-          const code = editor.getText();
-          if (!code) {
-            return;
-          }
+          const code = editor.getActualCode();
+
           if (editor !== activeEditor) {
             console.log(
               `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
@@ -161,6 +159,17 @@ export async function showPanel(
   );
 
   panel.iconPath = SOURCE_ACADEMY_ICON_URI;
+
+  vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
+    if (e.uri.toString() === activeEditor?.uri) {
+      const message = Messages.AssessmentAnswer(
+        activeEditor.questionId,
+        activeEditor.getActualCode()
+      );
+
+      sendToFrontend(panel, message);
+    }
+  })
 }
 
 // TODO: Move this to a util file

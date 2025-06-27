@@ -58,6 +58,10 @@ const Messages = createMessages({
   Navigate: (route: string) => ({
     route,
   }),
+  AssessmentAnswer: (questionId: number, answer: string) => ({
+    questionId,
+    answer
+  }),
 });
 
 export default Messages;
