@@ -11,6 +11,7 @@ export class Editor {
   workspaceLocation: VscWorkspaceLocation;
   assessmentName: string;
   questionId: number;
+  assessmentType: string | null = null;
   onChangeCallback?: (editor: Editor) => void;
   code: string | null = null;
   uri: string | null = null;
@@ -26,6 +27,7 @@ export class Editor {
   ) {
     this.workspaceLocation = workspaceLocation;
     this.assessmentName = assessmentName;
+    this.assessmentType = this.assessmentType;
     this.questionId = questionId;
   }
 

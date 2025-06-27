@@ -1,14 +1,19 @@
 import * as vscode from "vscode";
 import Messages from "../utils/messages";
-import { activeEditor, sendToFrontendWrapped } from "./showPanel";
+import { sendToFrontendWrapped } from "./showPanel";
+import { MessageHandler } from "../utils/messageHandler";
+
+let messageHandler = MessageHandler.getInstance();
 
 export async function evalEditor(context: vscode.ExtensionContext) {
-  if (!activeEditor) {
+  if (!messageHandler.activeEditor) {
     vscode.window.showErrorMessage(
       "Cannot evaluate code when there is no active editor!",
     );
     return;
   }
-  const message = Messages.EvalEditor(activeEditor.workspaceLocation);
+  const message = Messages.EvalEditor(
+    messageHandler.activeEditor.workspaceLocation,
+  );
   sendToFrontendWrapped(message);
 }
