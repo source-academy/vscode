@@ -161,6 +161,17 @@ export async function showPanel(
   );
 
   panel.iconPath = SOURCE_ACADEMY_ICON_URI;
+
+  vscode.workspace.onDidSaveTextDocument((e: vscode.TextDocument) => {
+    if (e.uri.toString() === activeEditor?.uri) {
+      const message = Messages.AssessmentAnswer(
+        activeEditor.questionId,
+        activeEditor.code ? activeEditor.code.split("\n").slice(activeEditor.num_prepend_lines).join("\n") : ""
+      );
+
+      sendToFrontend(panel, message);
+    }
+  })
 }
 
 // TODO: Move this to a util file

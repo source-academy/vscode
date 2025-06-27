@@ -14,6 +14,7 @@ export class Editor {
   onChangeCallback?: (editor: Editor) => void;
   code: string | null = null;
   uri: string | null = null;
+  num_prepend_lines: number = 0;
 
   // For debugging purposes
   replaceTime: number = 0;
@@ -69,6 +70,9 @@ export class Editor {
             initialCode,
           ].join("\n")
         : initialCode;
+    if (prepend !== "") {
+      self.num_prepend_lines = prepend.split("\n").length+2
+    }
 
     await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
       (value) => {
