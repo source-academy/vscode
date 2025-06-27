@@ -14,6 +14,7 @@ import { client } from "../extension";
 import _ from "lodash";
 import { treeDataProvider } from "../treeview";
 import McqPanel from "../webview/components/McqPanel";
+import { codeRemovePrepend, getNumPrependLines } from "./editorUtils";
 
 /*
  * MessageHandler is a singleton class that handles messages from the frontend
@@ -122,18 +123,12 @@ export class MessageHandler {
           this.activeEditor.uri;
           const info = context.globalState.get("info") ?? {};
           if (this.activeEditor.uri) {
-            // TODO: Write our own wrapper to set nested keys easily, removing lodash
-            // @ts-ignore
             _.set(
               info,
               `["${this.activeEditor.uri}"].chapter`,
               message.chapter ?? 1,
             );
-            // TODO: message.prepend can be undefined in runtime, investigate
-            const nPrependLines =
-              message.prepend && message.prepend !== ""
-                ? message.prepend.split("\n").length + 2 // account for start/end markers
-                : 0;
+            const nPrependLines = getNumPrependLines(message.prepend);
             _.set(info, `["${this.activeEditor.uri}"].prepend`, nPrependLines);
             context.globalState.update("info", info);
             client.sendRequest("source/publishInfo", info);
@@ -155,7 +150,10 @@ export class MessageHandler {
                 `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
               );
             }
-            const message = Messages.Text(workspaceLocation, code);
+            const message = Messages.Text(
+              workspaceLocation,
+              codeRemovePrepend(code),
+            );
             console.log(`Sending message: ${JSON.stringify(message)}`);
             sendToFrontend(this.panel, message);
           });

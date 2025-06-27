@@ -7,10 +7,11 @@ import { LANGUAGES } from "../utils/languages";
 import { setWebviewContent } from "../utils/webview";
 import config from "../utils/config";
 import { FRONTEND_ELEMENT_ID } from "../constants";
+import _ from "lodash";
 import { MessageHandler } from "../utils/messageHandler";
+import { SOURCE_ACADEMY_ICON_URI } from "../extension";
 
 let messageHandler = MessageHandler.getInstance();
-import { SOURCE_ACADEMY_ICON_URI } from "../extension";
 
 export async function showPanel(
   context: vscode.ExtensionContext,

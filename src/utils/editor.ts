@@ -1,3 +1,4 @@
+// TODO: Move this file to src/features/editor/editor.ts
 import * as vscode from "vscode";
 
 import config from "../utils/config";
@@ -5,6 +6,7 @@ import Messages, { VscWorkspaceLocation } from "./messages";
 import path from "path";
 import { sendToFrontendWrapped } from "../commands/showPanel";
 import { canonicaliseLocation } from "./misc";
+import { codeAddPrepend, codeRemovePrepend } from "./editorUtils";
 
 export class Editor {
   editor?: vscode.TextEditor;
@@ -62,58 +64,53 @@ export class Editor {
     const uri = vscode.Uri.file(filePath);
     self.uri = uri.toString();
 
-    const contents =
-      prepend !== ""
-        ? [
-            "// PREPEND -- DO NOT EDIT",
-            prepend,
-            "// END PREPEND",
-            initialCode,
-          ].join("\n")
-        : initialCode;
+    const contents = codeAddPrepend(initialCode, prepend);
 
-    await vscode.workspace.fs.readFile(vscode.Uri.file(filePath)).then(
-      (value) => {
-        if (value.toString() !== contents) {
-          self.log(
-            "EXTENSION: Conflict detected between local and remote, prompting user to choose one",
+    await vscode.workspace.fs
+      .readFile(vscode.Uri.file(filePath))
+      .then((value) => value.toString())
+      .then(
+        (localCode) => {
+          if (localCode !== contents) {
+            self.log(
+              "EXTENSION: Conflict detected between local and remote, prompting user to choose one",
+            );
+            vscode.window
+              .showInformationMessage(
+                [
+                  "The local file differs from the version on the Source Academy servers.",
+                  "Discard the local file and use the one on the server?",
+                ].join(" "),
+                { modal: true },
+                "Yes",
+              )
+              .then(async (answer) => {
+                // By default the code displayed is the local one
+                if (answer === "Yes") {
+                  self.log("EXTENSION: Saving program from server to file");
+                  await vscode.workspace.fs.writeFile(
+                    uri,
+                    new TextEncoder().encode(contents),
+                  );
+                } else if (answer === undefined) {
+                  // Modal cancelled
+                  const message = Messages.Text(
+                    self.workspaceLocation,
+                    codeRemovePrepend(localCode),
+                  );
+                  sendToFrontendWrapped(message);
+                }
+              });
+          }
+        },
+        async () => {
+          self.log(`Opening file failed, creating at ${filePath}`);
+          await vscode.workspace.fs.writeFile(
+            uri,
+            new TextEncoder().encode(contents),
           );
-          vscode.window
-            .showInformationMessage(
-              [
-                "The local file differs from the version on the Source Academy servers.",
-                "Discard the local file and use the one on the server?",
-              ].join(" "),
-              { modal: true },
-              "Yes",
-            )
-            .then(async (answer) => {
-              // By default the code displayed is the local one
-              if (answer === "Yes") {
-                self.log("EXTENSION: Saving program from server to file");
-                await vscode.workspace.fs.writeFile(
-                  uri,
-                  new TextEncoder().encode(contents),
-                );
-              } else if (answer === undefined) {
-                // Modal cancelled
-                const message = Messages.Text(
-                  self.workspaceLocation,
-                  value.toString(),
-                );
-                sendToFrontendWrapped(message);
-              }
-            });
-        }
-      },
-      async () => {
-        self.log(`Opening file failed, creating at ${filePath}`);
-        await vscode.workspace.fs.writeFile(
-          uri,
-          new TextEncoder().encode(contents),
-        );
-      },
-    );
+        },
+      );
 
     const editor = await vscode.window.showTextDocument(uri, {
       preview: false,
