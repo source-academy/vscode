@@ -73,10 +73,8 @@ async function handleMessage(
         );
         activeEditor.onChange((editor) => {
           const workspaceLocation = editor.workspaceLocation;
-          const code = editor.getText();
-          if (!code) {
-            return;
-          }
+          const code = editor.getActualCode();
+
           if (editor !== activeEditor) {
             console.log(
               `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,

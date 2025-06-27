@@ -150,8 +150,8 @@ export class Editor {
           return;
         }
         self.log(`EXTENSION: Editor's code changed!`);
-        self.onChangeCallback(self);
         self.code = text;
+        self.onChangeCallback(self);
       },
     );
     return self;
