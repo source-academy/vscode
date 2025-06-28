@@ -60,7 +60,6 @@ const SourceAcademy: React.FC = () => {
     setRetryCount((c) => c + 1);
   }, [retryCount]);
 
-  // Show overlay if frontend handshake never completes within 5 s.
   // Re-runs whenever retryCount increments.
   useEffect(() => {
     const timer = window.setTimeout(() => {

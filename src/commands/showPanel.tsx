@@ -35,6 +35,11 @@ export async function showPanel(
     },
   );
 
+  // Reset stored panel when the user closes it
+  messageHandler.panel.onDidDispose(() => {
+    messageHandler.panel = null;
+  });
+
   messageHandler.panel.webview.onDidReceiveMessage(
     (message: MessageType) => messageHandler.handleMessage(context, message),
     undefined,
@@ -68,13 +73,16 @@ export async function showPanel(
   messageHandler.panel.iconPath = SOURCE_ACADEMY_ICON_URI;
 }
 
-export async function sendToFrontendWrapped(message: MessageType) {
-  sendToFrontend(messageHandler.panel, message);
-  // TODO: This returning of status code shouldn't be necessary after refactor
+export function sendToFrontendWrapped(message: MessageType): boolean {
   if (!messageHandler.panel) {
-    console.error("ERROR: panel is not set");
     return false;
   }
-  sendToFrontend(messageHandler.panel, message);
-  return true;
+  try {
+    sendToFrontend(messageHandler.panel, message);
+    return true;
+  } catch (err) {
+    console.error("Failed to send message to webview", err);
+    messageHandler.panel = null;
+    return false;
+  }
 }
