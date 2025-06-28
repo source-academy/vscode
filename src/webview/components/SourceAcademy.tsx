@@ -3,7 +3,7 @@
  * It simply relays messages between the VSC Extension context and the Frontend iframe context.
  */
 //
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Messages, { MessageType, MessageTypeNames } from "../../utils/messages";
 import { FRONTEND_ELEMENT_ID } from "../../constants";
 
@@ -32,6 +32,7 @@ function initialListener(event: MessageEvent) {
     event.origin === message.frontendOrigin
   ) {
     frontendBaseUrl = event.origin;
+
     relayToExtension(message);
     window.addEventListener("message", messageListener);
     return;
@@ -51,13 +52,32 @@ function messageListener(event: MessageEvent) {
 }
 
 const SourceAcademy: React.FC = () => {
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const handleRetry = useCallback(() => {
+    setError(null);
+    setRetryCount((c) => c + 1);
+  }, [retryCount]);
+
+  // Show overlay if frontend handshake never completes within 5 s.
+  // Re-runs whenever retryCount increments.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setError(
+        "Can’t reach Source Academy. Please check your internet connection and retry.",
+      );
+    }, 5000);
+    return () => window.clearTimeout(timer);
+  }, [retryCount]);
+
   useEffect(() => {
     window.addEventListener("message", initialListener);
     return () => {
       window.removeEventListener("message", initialListener);
       window.removeEventListener("message", messageListener);
     };
-  }, []);
+  }, [retryCount]);
 
   useEffect(() => {
     // TODO: Hacky way to update mcq panel, standard onClick handlers don't work
@@ -155,8 +175,43 @@ const SourceAcademy: React.FC = () => {
     restore();
 
     return () => document.removeEventListener("change", handleChoiceChange);
-  }, []);
+  }, [retryCount]);
 
-  return <></>;
+  return (
+    <>
+      {error && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "#1e293b",
+            color: "#f8fafc",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            textAlign: "center",
+          }}
+        >
+          <p>{error}</p>
+          <button
+            style={{
+              marginTop: "0.5rem",
+              padding: "0.4rem 0.8rem",
+              background: "#334155",
+              color: "#f8fafc",
+              border: "1px solid #94a3b8",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            onClick={handleRetry}
+          >
+            Retry
+          </button>
+        </div>
+      )}
+    </>
+  );
 };
 export default SourceAcademy;
