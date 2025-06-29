@@ -82,6 +82,9 @@ const Messages = createMessages({
     questionId,
     choice,
   }),
+  LoginWithBrowser: (route: string) => ({
+    route,
+  }),
 });
 
 export default Messages;
