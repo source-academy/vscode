@@ -26,7 +26,8 @@
       },
       {
         "command": "source-academy.show-panel",
-        "title": "Source Academy: Show the Source Academy panel"
+        "title": "Source Academy: Show the Source Academy panel",
+        "icon": "$(rocket)"
       },
       {
         "command": "source-academy.eval-editor",
@@ -74,11 +75,20 @@
         "key": "shift+enter"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "source-academy.show-panel",
+          "when": "view == assessments",
+          "group": "navigation"
+        }
+      ]
+    },
     "views": {
       "source-academy": [
         {
           "id": "assessments",
-          "name": "Assessments",
+          "name": "",
           "icon": "assets/icon.svg",
           "contextualTitle": "Source Academy"
         }
