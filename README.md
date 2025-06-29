@@ -24,10 +24,13 @@ If you don't have VS Code installed yet, download it from [here](https://code.vi
 From within VS Code,
 
 1. Click on the Extensions icon on the left sidebar or the `View: Show Extensions` command (`Ctrl+Shift+X`).
-2. Search for "Source Academy" and install it.
+2. Search for "Source Academy" and click "Install". When prompted for `Do you trust the publisher "Source Academy"?` click `Trust Publisher & Install`.
 
 We'd recommend also installing the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) extension
 to show diagnostic messages more prominently.
+
+Source Academy will store your code in the `.sourceacademy` folder of your home directory by default, which you may change in the settings.
+If asked, `Do you trust the authors of the files in this folder?`, do click on `Yes, I trust the authors`.
 
 ## Getting started
 

@@ -69,6 +69,30 @@ const Messages = createMessages({
   Navigate: (route: string) => ({
     route,
   }),
+  McqQuestion: (
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+    chapter: number,
+    options: string[],
+  ) => ({
+    workspaceLocation,
+    assessmentName,
+    questionId,
+    chapter,
+    options,
+  }),
+  McqAnswer: (
+    workspaceLocation: VscWorkspaceLocation,
+    assessmentName: string,
+    questionId: number,
+    choice: number,
+  ) => ({
+    workspaceLocation,
+    assessmentName,
+    questionId,
+    choice,
+  }),
 });
 
 export default Messages;
