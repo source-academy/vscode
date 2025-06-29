@@ -15,12 +15,7 @@ export class Editor {
   questionId: number;
   assessmentType: string | null = null;
   onChangeCallback?: (editor: Editor) => void;
-  code: string | null = null;
   uri: string | null = null;
-
-  // For debugging purposes
-  replaceTime: number = 0;
-  nBursty: number = 0;
 
   constructor(
     workspaceLocation: VscWorkspaceLocation,
@@ -129,20 +124,11 @@ export class Editor {
         if (!self.onChangeCallback) {
           return;
         }
-        const text = editor.document.getText();
         if (e.contentChanges.length === 0) {
           self.log(`EXTENSION: Editor's code did not change, ignoring`);
           return;
         }
-        if (Date.now() - self.replaceTime < 1000) {
-          self.log(
-            `EXTENSION: Ignoring change event, ${Date.now() - self.replaceTime}ms since last replace`,
-          );
-          return;
-        }
-        self.log(`EXTENSION: Editor's code changed!`);
         self.onChangeCallback(self);
-        self.code = text;
       },
     );
     return self;
@@ -152,18 +138,6 @@ export class Editor {
     if (!this.editor) {
       return;
     }
-    this.log(`EXTENSION: Editor's replace called by ${tag}: <<${code}>>`);
-    if (this.nBursty > 5) {
-      if (Date.now() - this.replaceTime < 5000) {
-        this.log(`EXTENSION: TOO BURSTY`);
-        return;
-      }
-      this.nBursty = 0;
-    }
-    if (Date.now() - this.replaceTime < 1000) {
-      this.nBursty++;
-    }
-    // this.disableCallback = true;
     const editor = this.editor;
     // Don't replace if the code is the same
     editor.edit((editBuilder) => {
@@ -175,20 +149,6 @@ export class Editor {
         code,
       );
     });
-    let retry = 0;
-    while (editor.document.getText() !== code) {
-      await new Promise((r) => setTimeout(r, 100));
-      this.log(
-        `EXTENSION: Editor's not replace yet, lets wait: ${editor.document.getText()}`,
-      );
-      retry++;
-      if (retry > 11) {
-        this.log(`EXTENSION: Editor's replace wait limit reached`);
-        break;
-      }
-    }
-    this.code = code;
-    this.replaceTime = Date.now();
   }
 
   onChange(
