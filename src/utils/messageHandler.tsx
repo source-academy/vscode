@@ -167,6 +167,12 @@ export class MessageHandler {
           context.globalState.update("courseId", courseId);
           treeDataProvider.refresh();
           break;
+        case MessageTypeNames.ResetEditor:
+          if (this.activeEditor) {
+            this.activeEditor.replace(message.initialCode);
+            this.panel?.reveal(vscode.ViewColumn.Two);
+          }
+          break;
       }
       console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
     }

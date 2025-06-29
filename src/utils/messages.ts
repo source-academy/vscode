@@ -48,6 +48,13 @@ const Messages = createMessages({
   EvalEditor: (workspaceLocation: VscWorkspaceLocation) => ({
     workspaceLocation: workspaceLocation,
   }),
+  ResetEditor: (
+    workspaceLocation: VscWorkspaceLocation,
+    initialCode: string,
+  ) => ({
+    workspaceLocation,
+    initialCode,
+  }),
   NotifyAssessmentsOverview: (
     assessmentOverviews: VscAssessmentOverview[],
     courseId: number,

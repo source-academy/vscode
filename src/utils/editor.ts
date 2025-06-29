@@ -17,6 +17,7 @@ export class Editor {
   private onChangeCallback?: (editor: Editor) => void;
 
   // Data associated with TextEditor
+  prepend: string;
   uri: string;
 
   // Metadata relating to this question
@@ -26,12 +27,14 @@ export class Editor {
 
   private constructor(
     editor: vscode.TextEditor,
+    prepend: string,
     uri: string,
     workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
     questionId: number,
   ) {
     this.editor = editor;
+    this.prepend = prepend;
     this.uri = uri;
     this.workspaceLocation = workspaceLocation;
     this.assessmentName = assessmentName;
@@ -123,6 +126,7 @@ export class Editor {
     // Create wrapper
     const self = new Editor(
       editor,
+      prepend,
       uri.toString(),
       workspaceLocation,
       assessmentName,
@@ -146,16 +150,18 @@ export class Editor {
     return self;
   }
 
-  async replace(code: string, tag: string = "") {
+  async replace(code: string) {
     const editor = this.editor;
-    // Don't replace if the code is the same
+    const contents = codeAddPrepend(code, this.prepend);
+
+    // In some sense, simulate a select all and paste
     editor.edit((editBuilder) => {
       editBuilder.replace(
         new vscode.Range(
           editor.document.positionAt(0),
           editor.document.positionAt(editor.document.getText().length),
         ),
-        code,
+        contents,
       );
     });
   }
