@@ -9,11 +9,11 @@ import { canonicaliseLocation } from "./misc";
 import { codeAddPrepend, codeRemovePrepend } from "./editorUtils";
 
 export class Editor {
-  editor?: vscode.TextEditor;
+  editor: vscode.TextEditor;
   onChangeCallback?: (editor: Editor) => void;
 
   // Data associated with TextEditor
-  uri: string | null = null;
+  uri: string;
 
   // Metadata relating to this question
   workspaceLocation: VscWorkspaceLocation;
@@ -21,10 +21,14 @@ export class Editor {
   questionId: number;
 
   constructor(
+    editor: vscode.TextEditor,
+    uri: string,
     workspaceLocation: VscWorkspaceLocation,
     assessmentName: string,
     questionId: number,
   ) {
+    this.editor = editor;
+    this.uri = uri;
     this.workspaceLocation = workspaceLocation;
     this.assessmentName = assessmentName;
     this.questionId = questionId;
@@ -32,11 +36,11 @@ export class Editor {
 
   /** For debugging purposes */
   log(text: string) {
-    console.log(`${this.editor?.document.fileName.split("/").at(-1)} ${text}`);
+    console.log(`${this.editor.document.fileName.split("/").at(-1)} ${text}`);
   }
 
   getText() {
-    return this.editor?.document.getText();
+    return this.editor.document.getText();
   }
 
   // TODO: This method is too loaded, it's not obvious it also shows the editor
@@ -47,8 +51,6 @@ export class Editor {
     prepend: string = "",
     initialCode: string = "",
   ): Promise<Editor> {
-    const self = new Editor(workspaceLocation, assessmentName, questionId);
-
     const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
     const filePath = path.join(
       workspaceFolder,
@@ -56,7 +58,6 @@ export class Editor {
     );
     const uri = vscode.Uri.file(filePath);
 
-    self.uri = uri.toString();
     const contents = codeAddPrepend(initialCode, prepend);
 
     await vscode.workspace.fs
@@ -65,9 +66,6 @@ export class Editor {
       .then(
         (localCode) => {
           if (localCode !== contents) {
-            self.log(
-              "EXTENSION: Conflict detected between local and remote, prompting user to choose one",
-            );
             vscode.window
               .showInformationMessage(
                 [
@@ -80,7 +78,6 @@ export class Editor {
               .then(async (answer) => {
                 // By default the code displayed is the local one
                 if (answer === "Yes") {
-                  self.log("EXTENSION: Saving program from server to file");
                   await vscode.workspace.fs.writeFile(
                     uri,
                     new TextEncoder().encode(contents),
@@ -88,7 +85,7 @@ export class Editor {
                 } else if (answer === undefined) {
                   // Modal cancelled
                   const message = Messages.Text(
-                    self.workspaceLocation,
+                    workspaceLocation,
                     codeRemovePrepend(localCode),
                   );
                   sendToFrontendWrapped(message);
@@ -97,7 +94,6 @@ export class Editor {
           }
         },
         async () => {
-          self.log(`Opening file failed, creating at ${filePath}`);
           await vscode.workspace.fs.writeFile(
             uri,
             new TextEncoder().encode(contents),
@@ -109,7 +105,6 @@ export class Editor {
       preview: false,
       viewColumn: vscode.ViewColumn.One,
     });
-    self.editor = editor;
 
     // Programmatically set the language
     vscode.languages.setTextDocumentLanguage(editor.document, "source");
@@ -120,6 +115,15 @@ export class Editor {
       editor.document.positionAt(1),
     );
     vscode.commands.executeCommand("editor.fold");
+
+    // Create wrapper
+    const self = new Editor(
+      editor,
+      uri.toString(),
+      workspaceLocation,
+      assessmentName,
+      questionId,
+    );
 
     // Register callback when contents changed
     vscode.workspace.onDidChangeTextDocument(
@@ -134,13 +138,11 @@ export class Editor {
         self.onChangeCallback(self);
       },
     );
+
     return self;
   }
 
   async replace(code: string, tag: string = "") {
-    if (!this.editor) {
-      return;
-    }
     const editor = this.editor;
     // Don't replace if the code is the same
     editor.edit((editBuilder) => {
