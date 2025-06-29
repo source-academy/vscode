@@ -147,7 +147,7 @@ export class MessageHandler {
             }
             if (editor !== this.activeEditor) {
               console.log(
-                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
+                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
               );
             }
             const message = Messages.Text(

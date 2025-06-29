@@ -10,12 +10,15 @@ import { codeAddPrepend, codeRemovePrepend } from "./editorUtils";
 
 export class Editor {
   editor?: vscode.TextEditor;
+  onChangeCallback?: (editor: Editor) => void;
+
+  // Data associated with TextEditor
+  uri: string | null = null;
+
+  // Metadata relating to this question
   workspaceLocation: VscWorkspaceLocation;
   assessmentName: string;
   questionId: number;
-  assessmentType: string | null = null;
-  onChangeCallback?: (editor: Editor) => void;
-  uri: string | null = null;
 
   constructor(
     workspaceLocation: VscWorkspaceLocation,
@@ -24,7 +27,6 @@ export class Editor {
   ) {
     this.workspaceLocation = workspaceLocation;
     this.assessmentName = assessmentName;
-    this.assessmentType = this.assessmentType;
     this.questionId = questionId;
   }
 
@@ -46,19 +48,15 @@ export class Editor {
     initialCode: string = "",
   ): Promise<Editor> {
     const self = new Editor(workspaceLocation, assessmentName, questionId);
-    self.assessmentName = assessmentName;
-    self.questionId = questionId;
 
     const workspaceFolder = canonicaliseLocation(config.workspaceFolder);
-
     const filePath = path.join(
       workspaceFolder,
       `${assessmentName}_${questionId}.js`,
     );
-
     const uri = vscode.Uri.file(filePath);
-    self.uri = uri.toString();
 
+    self.uri = uri.toString();
     const contents = codeAddPrepend(initialCode, prepend);
 
     await vscode.workspace.fs
@@ -111,14 +109,19 @@ export class Editor {
       preview: false,
       viewColumn: vscode.ViewColumn.One,
     });
+    self.editor = editor;
+
+    // Programmatically set the language
     vscode.languages.setTextDocumentLanguage(editor.document, "source");
+
+    // Collapse the prepend section
     editor.selection = new vscode.Selection(
       editor.document.positionAt(0),
       editor.document.positionAt(1),
     );
     vscode.commands.executeCommand("editor.fold");
 
-    self.editor = editor;
+    // Register callback when contents changed
     vscode.workspace.onDidChangeTextDocument(
       (e: vscode.TextDocumentChangeEvent) => {
         if (!self.onChangeCallback) {
