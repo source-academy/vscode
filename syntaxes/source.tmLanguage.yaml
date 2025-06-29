@@ -101,7 +101,7 @@ repository:
   function-declaration:
     patterns:
       - name: meta.function
-        begin: (function)\s?(\w+)\((\w*)\)\s?\{
+        begin: (function)\s?(\w+)\(([\w\s,]*)\)\s?\{
         beginCaptures:
           "1": { name: storage.type.function }
           "2": { name: entity.name.function }
