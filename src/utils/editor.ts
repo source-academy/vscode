@@ -8,9 +8,13 @@ import { sendToFrontendWrapped } from "../commands/showPanel";
 import { canonicaliseLocation } from "./misc";
 import { codeAddPrepend, codeRemovePrepend } from "./editorUtils";
 
+/**
+ * Represents a VS Code editor associated with a Source Academy question.
+ * Abstracts low level calling of VS Code APIs.
+ */
 export class Editor {
-  editor: vscode.TextEditor;
-  onChangeCallback?: (editor: Editor) => void;
+  private editor: vscode.TextEditor;
+  private onChangeCallback?: (editor: Editor) => void;
 
   // Data associated with TextEditor
   uri: string;
@@ -20,7 +24,7 @@ export class Editor {
   assessmentName: string;
   questionId: number;
 
-  constructor(
+  private constructor(
     editor: vscode.TextEditor,
     uri: string,
     workspaceLocation: VscWorkspaceLocation,
@@ -35,7 +39,7 @@ export class Editor {
   }
 
   /** For debugging purposes */
-  log(text: string) {
+  private log(text: string) {
     console.log(`${this.editor.document.fileName.split("/").at(-1)} ${text}`);
   }
 
