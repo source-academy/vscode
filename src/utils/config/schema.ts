@@ -3,7 +3,7 @@ import { ConfigSchemaUnion } from "./types";
 export default {
   frontendBaseUrl: {
     type: "string",
-    default: "https://frontend.cloud.heyzec.dedyn.io",
+    default: "https://sourceacademy.nus.edu.sg",
   },
   workspaceFolder: {
     type: "string",
