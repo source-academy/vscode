@@ -22,24 +22,24 @@ export async function showPanel(
     language = LANGUAGES.SOURCE_1;
   }
 
-  // Get a reference to the active editor (before the focus is switched to our newly created webview)
-  // firstEditor = vscode.window.activeTextEditor!;
+  // Don't recreate the panel it already exists. There will only be one panel at anytime.
+  if (!messageHandler.panel) {
+    messageHandler.panel = vscode.window.createWebviewPanel(
+      "source-academy-panel",
+      "Source Academy",
+      vscode.ViewColumn.Beside,
+      {
+        enableScripts: true, // Enable scripts in w the webview
+        retainContextWhenHidden: true,
+      },
+    );
 
-  messageHandler.panel = vscode.window.createWebviewPanel(
-    "source-academy-panel",
-    "Source Academy",
-    vscode.ViewColumn.Beside,
-    {
-      enableScripts: true, // Enable scripts in the webview
-      retainContextWhenHidden: true,
-    },
-  );
-
-  messageHandler.panel.webview.onDidReceiveMessage(
-    (message: MessageType) => messageHandler.handleMessage(context, message),
-    undefined,
-    context.subscriptions,
-  );
+    messageHandler.panel.webview.onDidReceiveMessage(
+      (message: MessageType) => messageHandler.handleMessage(context, message),
+      undefined,
+      context.subscriptions,
+    );
+  }
 
   const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
     .href;
