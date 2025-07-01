@@ -3,6 +3,7 @@ import { runLanguagePicker } from "./language";
 import { evalEditor } from "./evalEditor";
 import { showPanel } from "./showPanel";
 import { navigate } from "./navigate";
+import { login } from "./login";
 
 const EXTENSION_ID = "source-academy";
 
@@ -12,9 +13,11 @@ const EXTENSION_ID = "source-academy";
  */
 const commands = (context: vscode.ExtensionContext) => ({
   pick: () => runLanguagePicker(context),
-  "show-panel": (route?: string) => showPanel(context, route),
+  "show-panel": (route?: string, altUrl?: string) =>
+    showPanel(context, route, altUrl),
   "eval-editor": () => evalEditor(context),
   navigate: (route: string) => navigate(context, route),
+  login: () => login(context),
 });
 
 /**

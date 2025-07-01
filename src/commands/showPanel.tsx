@@ -16,6 +16,7 @@ let messageHandler = MessageHandler.getInstance();
 export async function showPanel(
   context: vscode.ExtensionContext,
   route?: string,
+  altUrl?: string,
 ) {
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {
@@ -41,9 +42,10 @@ export async function showPanel(
     );
   }
 
-  const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
-    .href;
+  const iframeUrl =
+    altUrl ?? new URL(route ?? "/playground", config.frontendBaseUrl).href;
 
+  // equivalent to panel.webview.html = ...
   setWebviewContent(
     messageHandler.panel,
     context,
