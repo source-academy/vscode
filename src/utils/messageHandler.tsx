@@ -173,9 +173,11 @@ export class MessageHandler {
             this.panel?.reveal(vscode.ViewColumn.Two);
           }
           break;
-      case MessageTypeNames.LoginWithBrowser:
-        const { route } = message;
-        vscode.env.openExternal(vscode.Uri.parse(route));
+        case MessageTypeNames.LoginWithBrowser:
+          let { route } = message;
+          // TODO: Remove this hack! This should be changed in the frontend
+          route = route.replace("saml_redirect", "saml_redirect_vscode");
+          vscode.env.openExternal(vscode.Uri.parse(route));
       }
       console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
     }

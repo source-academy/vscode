@@ -42,6 +42,11 @@
           "default": "https://sourceacademy.nus.edu.sg",
           "description": "URL to the Source Academy frontend"
         },
+        "source-academy.backendBaseUrl": {
+          "type": "string",
+          "default": "https://api.sourceacademy.nus.edu.sg",
+          "description": "URL to the Source Academy backend (only needed for SAML logins)"
+        },
         "source-academy.workspaceFolder": {
           "type": "string",
           "default": ".sourceacademy",
