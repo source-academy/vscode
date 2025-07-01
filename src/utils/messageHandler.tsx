@@ -147,7 +147,7 @@ export class MessageHandler {
             }
             if (editor !== this.activeEditor) {
               console.log(
-                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
+                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
               );
             }
             const message = Messages.Text(
@@ -167,6 +167,15 @@ export class MessageHandler {
           context.globalState.update("courseId", courseId);
           treeDataProvider.refresh();
           break;
+        case MessageTypeNames.ResetEditor:
+          if (this.activeEditor) {
+            this.activeEditor.replace(message.initialCode);
+            this.panel?.reveal(vscode.ViewColumn.Two);
+          }
+          break;
+      case MessageTypeNames.LoginWithBrowser:
+        const { route } = message;
+        vscode.env.openExternal(vscode.Uri.parse(route));
       }
       console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
     }

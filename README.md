@@ -41,11 +41,16 @@ After installing the extension,
 1. Click on the newly-added Source Academy icon on the left sidebar.
 2. Launch the Source Academy panel.
 
-<img src="./docs/images/launch-panel-from-sidebar.png" width="600">
+   <img src="./docs/images/launch-panel-from-sidebar.png" width="600">
 
-Alternatively, use the `Source Academy: Show the Source Academy Panel` command.
+   Alternatively, use the `Source Academy: Show the Source Academy Panel` command.
 
-Once the panel loads, you'll be prompted to log in. Afterwards, begin coding by opening any assessment.
+3. Choose a login method and authenticate in your browser.
+
+   - When prompted, click **Open** to proceed to the external website.
+   - After login, click **Open** again to allow the extension to open the URI. Optionally, check `Do not ask me again for this extension`.
+
+4. You may now begin coding by opening any assessment.
 
 ### Changing the frontend
 

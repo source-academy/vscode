@@ -101,7 +101,7 @@ repository:
   function-declaration:
     patterns:
       - name: meta.function
-        begin: (function)\s?(\w+)\((\w*)\)\s?\{
+        begin: (function)\s?(\w+)\(([\w\s,]*)\)\s?\{
         beginCaptures:
           "1": { name: storage.type.function }
           "2": { name: entity.name.function }
@@ -209,15 +209,17 @@ repository:
   function-call:
     patterns:
       - name: meta.function-call
-        match: (\w+)\((.+)\)
+        match: (\w+)(\()([^)]*)(\))
         captures:
           "1": { name: entity.name.function }
-          "2": { patterns: [{ include: "#expression" }] }
+          "2": { name: meta.brace.round }
+          "3": { patterns: [{ include: "#expression" }] }
+          "4": { name: meta.brace.round }
       - name: meta.function-call
         begin: (\w+)(\()
         beginCaptures:
-          "0": { name: entity.name.function }
-          "1": { name: meta.brace.round }
+          "1": { name: entity.name.function }
+          "2": { name: meta.brace.round }
         end: \)
         endCaptures:
           "0": { name: meta.brace.round }

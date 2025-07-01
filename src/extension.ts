@@ -80,6 +80,20 @@ export function activate(context: vscode.ExtensionContext) {
       "*.js": "source",
     });
   }
+
+  vscode.window.registerUriHandler({
+    handleUri(uri: vscode.Uri) {
+      const searchParams = new URLSearchParams(uri.query);
+      // The following two params are available when logging in via OAuth providers
+      const code = searchParams.get("code");
+      const clientRequestId = searchParams.get("client-request-id");
+
+      vscode.commands.executeCommand(
+        "source-academy.show-panel",
+        `/login/vscode_callback?code=${code}&client-request-id=${clientRequestId}`,
+      );
+    },
+  });
 }
 
 // This method is called when your extension is deactivated
