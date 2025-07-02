@@ -49,7 +49,7 @@ export class MessageHandler {
             this.mcqPanel = vscode.window.createWebviewPanel(
               "mcq-question-panel",
               `MCQ`,
-              vscode.ViewColumn.One,
+              vscode.ViewColumn.Two,
               { enableScripts: true, retainContextWhenHidden: true },
             );
 
@@ -88,7 +88,7 @@ export class MessageHandler {
               {ReactDOMServer.renderToString(activePanel)}
             </div>,
           );
-          this.mcqPanel.reveal(vscode.ViewColumn.One);
+          this.mcqPanel.reveal(vscode.ViewColumn.Two);
 
           break;
         }
@@ -173,9 +173,9 @@ export class MessageHandler {
             this.panel?.reveal(vscode.ViewColumn.Two);
           }
           break;
-      case MessageTypeNames.LoginWithBrowser:
-        const { route } = message;
-        vscode.env.openExternal(vscode.Uri.parse(route));
+        case MessageTypeNames.LoginWithBrowser:
+          const { route } = message;
+          vscode.env.openExternal(vscode.Uri.parse(route));
       }
       console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
     }
