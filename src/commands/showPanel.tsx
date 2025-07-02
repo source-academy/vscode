@@ -36,26 +36,16 @@ export async function showPanel(
     // Get a reference to the active editor (before the focus is switched to our newly created webview)
     // firstEditor = vscode.window.activeTextEditor!;
 
-    messageHandler.panel = vscode.window.createWebviewPanel(
-      "source-academy-panel",
-      "Source Academy",
-      vscode.ViewColumn.Beside,
-      {
-        enableScripts: true, // Enable scripts in the webview
-        retainContextWhenHidden: true,
-      },
-    );
-
-    // Reset stored panel when the user closes it
-    messageHandler.panel.onDidDispose(() => {
-      messageHandler.panel = null;
-    });
-
     messageHandler.panel.webview.onDidReceiveMessage(
       (message: MessageType) => messageHandler.handleMessage(context, message),
       undefined,
       context.subscriptions,
     );
+
+    messageHandler.panel.onDidDispose(() => {
+      console.log("Panel disposed, clearing message handler panel");
+      messageHandler.panel = null;
+    });
 
     const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
       .href;
