@@ -16,6 +16,7 @@ let messageHandler = MessageHandler.getInstance();
 export async function showPanel(
   context: vscode.ExtensionContext,
   route?: string,
+  altUrl?: string,
 ) {
   let language: string | undefined = context.workspaceState.get("language");
   if (!language) {

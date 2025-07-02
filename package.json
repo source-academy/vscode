@@ -1,6 +1,6 @@
 {
   "name": "source-academy",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "publisher": "source-academy",
   "license": "Apache-2.0",
   "displayName": "Source Academy",
@@ -41,6 +41,11 @@
           "type": "string",
           "default": "https://sourceacademy.nus.edu.sg",
           "description": "URL to the Source Academy frontend"
+        },
+        "source-academy.backendBaseUrl": {
+          "type": "string",
+          "default": "https://api.sourceacademy.nus.edu.sg",
+          "description": "URL to the Source Academy backend (only needed for SAML logins)"
         },
         "source-academy.workspaceFolder": {
           "type": "string",
