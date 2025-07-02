@@ -52,32 +52,6 @@ function messageListener(event: MessageEvent) {
 }
 
 const SourceAcademy: React.FC = () => {
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-
-  const handleRetry = useCallback(() => {
-    setError(null);
-    setRetryCount((c) => c + 1);
-  }, [retryCount]);
-
-  // Re-runs whenever retryCount increments.
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setError(
-        "Can’t reach Source Academy. Please check your internet connection and retry.",
-      );
-    }, 5000);
-    return () => window.clearTimeout(timer);
-  }, [retryCount]);
-
-  useEffect(() => {
-    window.addEventListener("message", initialListener);
-    return () => {
-      window.removeEventListener("message", initialListener);
-      window.removeEventListener("message", messageListener);
-    };
-  }, [retryCount]);
-
   useEffect(() => {
     // TODO: Hacky way to update mcq panel, standard onClick handlers don't work
     const highlightSelection = (
@@ -174,43 +148,8 @@ const SourceAcademy: React.FC = () => {
     restore();
 
     return () => document.removeEventListener("change", handleChoiceChange);
-  }, [retryCount]);
+  }, []);
 
-  return (
-    <>
-      {error && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "#1e293b",
-            color: "#f8fafc",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "1rem",
-            textAlign: "center",
-          }}
-        >
-          <p>{error}</p>
-          <button
-            style={{
-              marginTop: "0.5rem",
-              padding: "0.4rem 0.8rem",
-              background: "#334155",
-              color: "#f8fafc",
-              border: "1px solid #94a3b8",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-            onClick={handleRetry}
-          >
-            Retry
-          </button>
-        </div>
-      )}
-    </>
-  );
+  return <></>;
 };
 export default SourceAcademy;
