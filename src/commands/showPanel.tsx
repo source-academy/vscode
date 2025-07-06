@@ -48,8 +48,8 @@ export async function showPanel(
       messageHandler.panel = null;
     });
 
-    const iframeUrl = new URL(route ?? "/playground", config.frontendBaseUrl)
-      .href;
+    const iframeUrl =
+      altUrl ?? new URL(route ?? "/playground", config.frontendBaseUrl).href;
 
     setWebviewContent(
       messageHandler.panel,
