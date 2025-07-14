@@ -169,13 +169,31 @@ repository:
   string:
     patterns:
       - name: string.quoted.double
-        match: '".*"'
-        captures:
-          "0": { patterns: [{ include: "#string-character-escape" }] }
+        begin: '"'
+        beginCaptures:
+          "0": { name: punctuation.definition.string.begin }
+        end: '"'
+        endCaptures:
+          "0": { name: punctuation.definition.string.end }
+        patterns:
+          - include: "#string-character-escape"
+          - match: '\\\n'
+            name: constant.character.escape.newline
+          - match: '\\.'
+            name: constant.character.escape
       - name: string.quoted.single
-        match: "'.*'"
-        captures:
-          "0": { patterns: [{ include: "#string-character-escape" }] }
+        begin: "'"
+        beginCaptures:
+          "0": { name: punctuation.definition.string.begin }
+        end: "'"
+        endCaptures:
+          "0": { name: punctuation.definition.string.end }
+        patterns:
+          - include: "#string-character-escape"
+          - match: '\\\n'
+            name: constant.character.escape.newline
+          - match: '\\.'
+            name: constant.character.escape
       - name: string.quoted.other
         begin: "`"
         end: "`"
@@ -204,7 +222,6 @@ repository:
         patterns:
           - include: "#comment"
           - include: "#block"
-      - name: meta.arrow
 
   function-call:
     patterns:
