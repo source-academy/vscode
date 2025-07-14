@@ -164,7 +164,17 @@ repository:
       regex-literal:
         patterns:
           - name: invalid.illegal.string.regexp
-            match: \/.+\/(?<!\/\/)(?!\/)\w*
+            begin: (?x)(?<= (=|:|return|,|\(|\[|\{|\!|\?|&&|\|\||\bcase\b) \s* )/
+            beginCaptures:
+              "0": { name: invalid.illegal.string.regexp }
+            end: /[gimsuy]*
+            endCaptures:
+              "0": { name: invalid.illegal.string.regexp }
+            patterns:
+              - name: constant.character.escape
+                match: \\.
+              - name: invalid.illegal.newline
+                match: \n
 
   string:
     patterns:
