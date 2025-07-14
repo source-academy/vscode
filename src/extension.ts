@@ -81,6 +81,22 @@ export function activate(context: vscode.ExtensionContext) {
     },
   });
 
+  const debugConfig = vscode.workspace.getConfiguration('debug');
+  try {
+    if (debugConfig.get("allowBreakpointsEverywhere") === false) {
+      debugConfig.update("allowBreakpointsEverywhere", true, vscode.ConfigurationTarget.Global);
+      vscode.window.showInformationMessage('Successfully set "debug.allowBreakpointsEverywhere" to true in your user settings.');
+    }
+
+} catch (error) {
+    // Handle potential errors, e.g., if settings can't be written.
+    console.error(error);
+    vscode.window.showErrorMessage([
+      'Failed to set "debug.allowBreakpointsEverywhere" to true in your user settings.',
+      'Please manually set this to true to be able to use the CSE Machine'
+      ].join(" "));
+}
+
   
   let messageHandler = MessageHandler.getInstance()
   // we use this map to track breakpoints
