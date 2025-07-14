@@ -164,17 +164,15 @@ repository:
       regex-literal:
         patterns:
           - name: invalid.illegal.string.regexp
-            begin: (?x)(?<= (=|:|return|,|\(|\[|\{|\!|\?|&&|\|\||\bcase\b) \s* )/
+            begin: '(?<=[=(:!,+-]|^|return)\s*(/)(?![/*+{}?])'
+            end: "(/)[igm]*"
             beginCaptures:
               "0": { name: invalid.illegal.string.regexp }
-            end: /[gimsuy]*
             endCaptures:
               "0": { name: invalid.illegal.string.regexp }
             patterns:
               - name: constant.character.escape
                 match: \\.
-              - name: invalid.illegal.newline
-                match: \n
 
   string:
     patterns:
@@ -189,8 +187,10 @@ repository:
           - include: "#string-character-escape"
           - match: '\\\n'
             name: constant.character.escape.newline
-          - match: '\\.'
+          - match: "\\\\(n|r|t|b|f|v|\\\\|\"|'|0|x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4})"
             name: constant.character.escape
+          - match: '\\.'
+            name: invalid.illegal.invalid-escape
       - name: string.quoted.single
         begin: "'"
         beginCaptures:
