@@ -8,6 +8,9 @@ import { activateLspClient, deactivateLspClient } from "./lsp/client";
 import { LanguageClient } from "vscode-languageclient/node";
 import { canonicaliseLocation } from "./utils/misc";
 import config from "./utils/config";
+import { MessageHandler } from "./utils/messageHandler";
+import { sendToFrontendWrapped } from "./commands/showPanel";
+import Messages from "./utils/messages";
 
 // TODO: Don't expose this object directly, create an interface via a wrapper class
 export let client: LanguageClient;
@@ -77,6 +80,46 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand("source-academy.show-panel", route, url);
     },
   });
+
+  
+  let messageHandler = MessageHandler.getInstance()
+  // we use this map to track breakpoints
+  // breakpoint instances are the same even when they are moved
+  const m = new Map<vscode.SourceBreakpoint, number>()
+  const handle_breakpoints = (breakpoint: vscode.Breakpoint, add: boolean) => {
+    if (!(breakpoint instanceof vscode.SourceBreakpoint)) {
+      return
+    }
+    const line = breakpoint.location.range.start.line
+    const editor = messageHandler.activeEditor
+    if (editor && editor.uri.toString() === breakpoint.location.uri.toString()) {
+      // Check for change
+      if (m.has(breakpoint) && add) {
+        delete editor.breakpoints[m.get(breakpoint)!]
+        editor.breakpoints[line] = "ace_breakpoint"
+        m.set(breakpoint, line)
+      }
+      else {
+        if (add) {
+          m.set(breakpoint, line);
+          editor.breakpoints[line] = "ace_breakpoint";
+        }
+        else {
+          m.delete(breakpoint)
+          delete editor.breakpoints[line];
+        }
+      }
+    }
+  }
+
+  vscode.debug.onDidChangeBreakpoints((e: vscode.BreakpointsChangeEvent) => {
+    e.added.map(b => handle_breakpoints(b, true))
+    e.removed.map(b => handle_breakpoints(b, false))
+    e.changed.map(b => handle_breakpoints(b, true))
+    const editor = messageHandler.activeEditor;
+    if (editor)
+      sendToFrontendWrapped(Messages.SetEditorBreakpoints(editor.workspaceLocation, editor.breakpoints))
+  })
 }
 
 // This method is called when your extension is deactivated
