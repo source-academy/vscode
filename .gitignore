@@ -3,6 +3,7 @@
 
 # Yarn Berry
 .pnp.*
+.yarn/install-state.gz
 
 # Intermediate files
 syntaxes/source.tmLanguage.json
