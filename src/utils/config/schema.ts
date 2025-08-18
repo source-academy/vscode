@@ -3,7 +3,12 @@ import { ConfigSchemaUnion } from "./types";
 export default {
   frontendBaseUrl: {
     type: "string",
-    default: "https://frontend.cloud.heyzec.dedyn.io",
+    default: "https://sourceacademy.nus.edu.sg",
+  },
+  // TODO: Remove this config in the future. See the login URI handler for details.
+  backendBaseUrl: {
+    type: "string",
+    default: "https://api.sourceacademy.nus.edu.sg",
   },
   workspaceFolder: {
     type: "string",

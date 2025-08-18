@@ -1,0 +1,28 @@
+// SYNTAX TEST "source.source" "function-call"
+
+f()
+// <- entity.name.function
+// <~-- meta.brace.round
+
+f(1)
+// <- entity.name.function
+// <~- meta.brace.round
+// <~~- constant.numeric.integer.decimal
+// ^ meta.brace.round
+
+f(1, "hello")
+// <- entity.name.function
+// <~- meta.brace.round
+// <~~- constant.numeric.integer.decimal
+//   ^^^^^^^ string.quoted.double
+//          ^ meta.brace.round
+
+f(
+// <~- meta.brace.round
+)
+// <- meta.brace.round
+
+f(
+// <~- meta.brace.round
+g())
+// <~--- meta.brace.round

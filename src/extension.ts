@@ -51,6 +51,32 @@ export function activate(context: vscode.ExtensionContext) {
       "*.js": "source",
     });
   }
+
+  vscode.window.registerUriHandler({
+    handleUri(uri: vscode.Uri) {
+      const searchParams = new URLSearchParams(uri.query);
+
+      const code = searchParams.get("code");
+      // The following params are available conditionally based on provider
+      const clientRequestId = searchParams.get("client-request-id"); // OAuth (NUS's IdP)
+      const provider = searchParams.get("provider"); // SAML
+
+      let route, url;
+      if (clientRequestId) {
+        // OAuth
+        route = `/login/vscode_callback?code=${code}&client-request-id=${clientRequestId}`;
+        url = null;
+      } else if (provider) {
+        // SAML
+        route = null;
+        // TODO: Let the frontend handle the contacting of backend, instead of us.
+        // Then, remove backendBaseUrl from schema and altUrl from showPanel
+        url = `${config.backendBaseUrl}/v2/auth/exchange?code=${code}&provider=${provider}`;
+      }
+
+      vscode.commands.executeCommand("source-academy.show-panel", route, url);
+    },
+  });
 }
 
 // This method is called when your extension is deactivated

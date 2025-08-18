@@ -147,7 +147,7 @@ export class MessageHandler {
             }
             if (editor !== this.activeEditor) {
               console.log(
-                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId}_${editor.assessmentType} is no longer active, skipping onChange`,
+                `EXTENSION: Editor ${editor.assessmentName}_${editor.questionId} is no longer active, skipping onChange`,
               );
             }
             const message = Messages.Text(
@@ -185,6 +185,17 @@ export class MessageHandler {
 
           break;
         }
+        case MessageTypeNames.ResetEditor:
+          if (this.activeEditor) {
+            this.activeEditor.replace(message.initialCode);
+            this.panel?.reveal(vscode.ViewColumn.Two);
+          }
+          break;
+        case MessageTypeNames.LoginWithBrowser:
+          let { route } = message;
+          // TODO: Remove this hack! This should be changed in the frontend
+          route = route.replace("saml_redirect", "saml_redirect_vscode");
+          vscode.env.openExternal(vscode.Uri.parse(route));
       }
       console.log(`${Date.now()} Finish handleMessage: ${message.type}`);
     }

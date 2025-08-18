@@ -1,6 +1,6 @@
 {
   "name": "source-academy",
-  "version": "0.3.1",
+  "version": "0.4.2",
   "publisher": "source-academy",
   "license": "Apache-2.0",
   "displayName": "Source Academy",
@@ -26,7 +26,8 @@
       },
       {
         "command": "source-academy.show-panel",
-        "title": "Source Academy: Show the Source Academy panel"
+        "title": "Source Academy: Show the Source Academy panel",
+        "icon": "$(rocket)"
       },
       {
         "command": "source-academy.eval-editor",
@@ -38,8 +39,13 @@
       "properties": {
         "source-academy.frontendBaseUrl": {
           "type": "string",
-          "default": "https://frontend.cloud.heyzec.dedyn.io",
+          "default": "https://sourceacademy.nus.edu.sg",
           "description": "URL to the Source Academy frontend"
+        },
+        "source-academy.backendBaseUrl": {
+          "type": "string",
+          "default": "https://api.sourceacademy.nus.edu.sg",
+          "description": "URL to the Source Academy backend (only needed for SAML logins)"
         },
         "source-academy.workspaceFolder": {
           "type": "string",
@@ -74,11 +80,20 @@
         "key": "shift+enter"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "source-academy.show-panel",
+          "when": "view == assessments",
+          "group": "navigation"
+        }
+      ]
+    },
     "views": {
       "source-academy": [
         {
           "id": "assessments",
-          "name": "Assessments",
+          "name": "",
           "icon": "assets/icon.svg",
           "contextualTitle": "Source Academy"
         }

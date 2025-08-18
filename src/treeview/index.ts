@@ -33,6 +33,9 @@ export class AssessmentsSidebarProvider
   }
 
   getChildren(element?: BaseTreeItem): Thenable<BaseTreeItem[]> {
+    // Synthetic root item that launches the Source Academy panel.
+    const launchItem = new PlaygroundItem();
+
     // @ts-ignore
     const assessmentOverviews: VscAssessmentOverview[] =
       this.context.globalState.get("assessmentOverviews");
@@ -44,13 +47,17 @@ export class AssessmentsSidebarProvider
       const assessmentTypes = [
         ...new Set(assessmentOverviews.map((ao) => ao.type)),
       ];
-      return Promise.resolve(
-        assessmentTypes.map((at) => new AssessmentFolder(at)),
-      );
+      const folders = assessmentTypes.map((at) => new AssessmentFolder(at));
+
+      return Promise.resolve([launchItem, ...folders]);
     }
 
     if (element && element.type === "AssessmentFolder") {
       const elem = element as AssessmentFolder;
+
+      if (!assessmentOverviews) {
+        return Promise.resolve([]);
+      }
 
       return Promise.resolve(
         assessmentOverviews
@@ -82,6 +89,21 @@ class BaseTreeItem extends vscode.TreeItem {
     light: SOURCE_ACADEMY_ICON_URI,
     dark: SOURCE_ACADEMY_ICON_URI,
   };
+}
+
+/**
+ * Synthetic tree item that always appears at the top-level of the view.
+ */
+class PlaygroundItem extends BaseTreeItem {
+  constructor() {
+    super("Playground", vscode.TreeItemCollapsibleState.None);
+    this.type = "LaunchItem";
+    this.command = {
+      title: "Playground",
+      command: "source-academy.navigate",
+      arguments: ["/playground"],
+    };
+  }
 }
 
 class AssessmentFolder extends BaseTreeItem {
