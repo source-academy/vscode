@@ -164,18 +164,46 @@ repository:
       regex-literal:
         patterns:
           - name: invalid.illegal.string.regexp
-            match: \/.+\/(?<!\/\/)(?!\/)\w*
+            begin: '(?<=[=(:!,+-]|^|return)\s*(/)(?![/*+{}?])'
+            end: "(/)[igm]*"
+            beginCaptures:
+              "0": { name: invalid.illegal.string.regexp }
+            endCaptures:
+              "0": { name: invalid.illegal.string.regexp }
+            patterns:
+              - name: constant.character.escape
+                match: \\.
 
   string:
     patterns:
       - name: string.quoted.double
-        match: '".*"'
-        captures:
-          "0": { patterns: [{ include: "#string-character-escape" }] }
+        begin: '"'
+        beginCaptures:
+          "0": { name: punctuation.definition.string.begin }
+        end: '"'
+        endCaptures:
+          "0": { name: punctuation.definition.string.end }
+        patterns:
+          - include: "#string-character-escape"
+          - match: '\\\n'
+            name: constant.character.escape.newline
+          - match: "\\\\(n|r|t|b|f|v|\\\\|\"|'|0|x[0-9A-Fa-f]{2}|u\\{[0-9A-Fa-f]+\\}|u[0-9A-Fa-f]{4})"
+            name: constant.character.escape
+          - match: '\\.'
+            name: invalid.illegal.invalid-escape
       - name: string.quoted.single
-        match: "'.*'"
-        captures:
-          "0": { patterns: [{ include: "#string-character-escape" }] }
+        begin: "'"
+        beginCaptures:
+          "0": { name: punctuation.definition.string.begin }
+        end: "'"
+        endCaptures:
+          "0": { name: punctuation.definition.string.end }
+        patterns:
+          - include: "#string-character-escape"
+          - match: '\\\n'
+            name: constant.character.escape.newline
+          - match: '\\.'
+            name: constant.character.escape
       - name: string.quoted.other
         begin: "`"
         end: "`"
@@ -204,7 +232,6 @@ repository:
         patterns:
           - include: "#comment"
           - include: "#block"
-      - name: meta.arrow
 
   function-call:
     patterns:
