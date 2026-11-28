@@ -4,6 +4,10 @@ on:
     # Assume only such tags are on main branch
     tags: ["v*"]
 
+# Read by default; the release job below needs write to create the GitHub release.
+permissions:
+  contents: read
+
 jobs:
   check:
     uses: ./.github/workflows/check.yml
@@ -31,6 +35,8 @@ jobs:
   release:
     needs: version
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
